@@ -80,6 +80,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Seaholm Scavenger Hunt" },
+      { name: "twitter:description", content: "Seaholm Scavenger Hunt" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9fb4698e-d11e-4b71-a51f-d912b684da81/id-preview-70c67cbd--e1379ed4-6976-4f4d-8aa1-91040256d65c.lovable.app-1779591547370.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9fb4698e-d11e-4b71-a51f-d912b684da81/id-preview-70c67cbd--e1379ed4-6976-4f4d-8aa1-91040256d65c.lovable.app-1779591547370.png" },
     ],
     links: [
       {
