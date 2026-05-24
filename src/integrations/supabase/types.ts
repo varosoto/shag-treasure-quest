@@ -14,7 +14,155 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dolly_answers: {
+        Row: {
+          answer_text: string
+          id: string
+          is_correct: boolean | null
+          line_num: number
+          submission_id: string
+        }
+        Insert: {
+          answer_text: string
+          id?: string
+          is_correct?: boolean | null
+          line_num: number
+          submission_id: string
+        }
+        Update: {
+          answer_text?: string
+          id?: string
+          is_correct?: boolean | null
+          line_num?: number
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dolly_answers_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submissions: {
+        Row: {
+          awarded_points: number | null
+          bonus_claimed: boolean | null
+          id: string
+          notes: string | null
+          photo_url: string | null
+          submitted_at: string | null
+          task_id: string
+          team_id: string
+        }
+        Insert: {
+          awarded_points?: number | null
+          bonus_claimed?: boolean | null
+          id?: string
+          notes?: string | null
+          photo_url?: string | null
+          submitted_at?: string | null
+          task_id: string
+          team_id: string
+        }
+        Update: {
+          awarded_points?: number | null
+          bonus_claimed?: boolean | null
+          id?: string
+          notes?: string | null
+          photo_url?: string | null
+          submitted_at?: string | null
+          task_id?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          base_points: number
+          bonus_description: string | null
+          clue: string | null
+          hint: string | null
+          icon: string | null
+          id: string
+          map_url: string | null
+          max_bonus_points: number | null
+          order_num: number
+          subtitle: string | null
+          task_description: string
+          title: string
+          type: string
+        }
+        Insert: {
+          base_points: number
+          bonus_description?: string | null
+          clue?: string | null
+          hint?: string | null
+          icon?: string | null
+          id: string
+          map_url?: string | null
+          max_bonus_points?: number | null
+          order_num: number
+          subtitle?: string | null
+          task_description: string
+          title: string
+          type: string
+        }
+        Update: {
+          base_points?: number
+          bonus_description?: string | null
+          clue?: string | null
+          hint?: string | null
+          icon?: string | null
+          id?: string
+          map_url?: string | null
+          max_bonus_points?: number | null
+          order_num?: number
+          subtitle?: string | null
+          task_description?: string
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          passcode: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          passcode: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          passcode?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
