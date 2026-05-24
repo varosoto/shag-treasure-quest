@@ -9,38 +9,135 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StartTeamRouteImport } from './routes/start-team'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as JoinTeamRouteImport } from './routes/join-team'
+import { Route as HuntRouteImport } from './routes/hunt'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TeamTeamIdRouteImport } from './routes/team.$teamId'
 
+const StartTeamRoute = StartTeamRouteImport.update({
+  id: '/start-team',
+  path: '/start-team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinTeamRoute = JoinTeamRouteImport.update({
+  id: '/join-team',
+  path: '/join-team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HuntRoute = HuntRouteImport.update({
+  id: '/hunt',
+  path: '/hunt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamTeamIdRoute = TeamTeamIdRouteImport.update({
+  id: '/team/$teamId',
+  path: '/team/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/hunt': typeof HuntRoute
+  '/join-team': typeof JoinTeamRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/start-team': typeof StartTeamRoute
+  '/team/$teamId': typeof TeamTeamIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/hunt': typeof HuntRoute
+  '/join-team': typeof JoinTeamRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/start-team': typeof StartTeamRoute
+  '/team/$teamId': typeof TeamTeamIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/hunt': typeof HuntRoute
+  '/join-team': typeof JoinTeamRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/start-team': typeof StartTeamRoute
+  '/team/$teamId': typeof TeamTeamIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/hunt'
+    | '/join-team'
+    | '/leaderboard'
+    | '/start-team'
+    | '/team/$teamId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/hunt'
+    | '/join-team'
+    | '/leaderboard'
+    | '/start-team'
+    | '/team/$teamId'
+  id:
+    | '__root__'
+    | '/'
+    | '/hunt'
+    | '/join-team'
+    | '/leaderboard'
+    | '/start-team'
+    | '/team/$teamId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HuntRoute: typeof HuntRoute
+  JoinTeamRoute: typeof JoinTeamRoute
+  LeaderboardRoute: typeof LeaderboardRoute
+  StartTeamRoute: typeof StartTeamRoute
+  TeamTeamIdRoute: typeof TeamTeamIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/start-team': {
+      id: '/start-team'
+      path: '/start-team'
+      fullPath: '/start-team'
+      preLoaderRoute: typeof StartTeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join-team': {
+      id: '/join-team'
+      path: '/join-team'
+      fullPath: '/join-team'
+      preLoaderRoute: typeof JoinTeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hunt': {
+      id: '/hunt'
+      path: '/hunt'
+      fullPath: '/hunt'
+      preLoaderRoute: typeof HuntRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +145,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/team/$teamId': {
+      id: '/team/$teamId'
+      path: '/team/$teamId'
+      fullPath: '/team/$teamId'
+      preLoaderRoute: typeof TeamTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HuntRoute: HuntRoute,
+  JoinTeamRoute: JoinTeamRoute,
+  LeaderboardRoute: LeaderboardRoute,
+  StartTeamRoute: StartTeamRoute,
+  TeamTeamIdRoute: TeamTeamIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
