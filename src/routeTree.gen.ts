@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StartTeamRouteImport } from './routes/start-team'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
-import { Route as JoinTeamRouteImport } from './routes/join-team'
 import { Route as HuntRouteImport } from './routes/hunt'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,11 +24,6 @@ const StartTeamRoute = StartTeamRouteImport.update({
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JoinTeamRoute = JoinTeamRouteImport.update({
-  id: '/join-team',
-  path: '/join-team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HuntRoute = HuntRouteImport.update({
@@ -57,7 +51,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/hunt': typeof HuntRoute
-  '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
   '/start-team': typeof StartTeamRoute
   '/team/$teamId': typeof TeamTeamIdRoute
@@ -66,7 +59,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/hunt': typeof HuntRoute
-  '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
   '/start-team': typeof StartTeamRoute
   '/team/$teamId': typeof TeamTeamIdRoute
@@ -76,7 +68,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/hunt': typeof HuntRoute
-  '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
   '/start-team': typeof StartTeamRoute
   '/team/$teamId': typeof TeamTeamIdRoute
@@ -87,7 +78,6 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/hunt'
-    | '/join-team'
     | '/leaderboard'
     | '/start-team'
     | '/team/$teamId'
@@ -96,7 +86,6 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/hunt'
-    | '/join-team'
     | '/leaderboard'
     | '/start-team'
     | '/team/$teamId'
@@ -105,7 +94,6 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/hunt'
-    | '/join-team'
     | '/leaderboard'
     | '/start-team'
     | '/team/$teamId'
@@ -115,7 +103,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   HuntRoute: typeof HuntRoute
-  JoinTeamRoute: typeof JoinTeamRoute
   LeaderboardRoute: typeof LeaderboardRoute
   StartTeamRoute: typeof StartTeamRoute
   TeamTeamIdRoute: typeof TeamTeamIdRoute
@@ -135,13 +122,6 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/join-team': {
-      id: '/join-team'
-      path: '/join-team'
-      fullPath: '/join-team'
-      preLoaderRoute: typeof JoinTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hunt': {
@@ -179,7 +159,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   HuntRoute: HuntRoute,
-  JoinTeamRoute: JoinTeamRoute,
   LeaderboardRoute: LeaderboardRoute,
   StartTeamRoute: StartTeamRoute,
   TeamTeamIdRoute: TeamTeamIdRoute,
@@ -187,13 +166,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
