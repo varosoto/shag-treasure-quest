@@ -6,6 +6,7 @@ import {
   adminUpdateSubmission,
   adminDeleteSubmission,
   adminResetTeam,
+  adminDeleteTeam,
   adminCreateTeam,
   adminListAll,
 } from "@/lib/admin.functions";
@@ -407,8 +408,11 @@ function TeamsTab({
 }) {
   const reset = useServerFn(adminResetTeam);
   const create = useServerFn(adminCreateTeam);
+  const delTeam = useServerFn(adminDeleteTeam);
   const [resetTarget, setResetTarget] = useState<TeamRow | null>(null);
   const [confirmStage, setConfirmStage] = useState(0);
+  const [deleteTarget, setDeleteTarget] = useState<TeamRow | null>(null);
+  const [deleteStage, setDeleteStage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
   const [teamPass, setTeamPass] = useState("");
@@ -442,6 +446,13 @@ function TeamsTab({
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Error");
     }
+  }
+  async function doDelete() {
+    if (!deleteTarget) return;
+    await delTeam({ data: { passcode, teamId: deleteTarget.id } });
+    setDeleteTarget(null);
+    setDeleteStage(0);
+    onChange();
   }
 
   return (
@@ -491,13 +502,17 @@ function TeamsTab({
               <div className="mt-1 font-mono text-[10px] text-ink/40">
                 Last: {s.last ? new Date(s.last).toLocaleString() : "—"}
               </div>
-              <div className="flex gap-2 mt-4">
+              <div className="flex flex-wrap gap-2 mt-4">
                 <Button asChild variant="outline" size="sm">
                   <Link to="/team/$teamId" params={{ teamId: t.id }}>View</Link>
                 </Button>
                 <Button variant="ghost" size="sm" className="text-rust hover:text-rust"
                   onClick={() => { setResetTarget(t); setConfirmStage(1); }}>
                   Reset progress
+                </Button>
+                <Button variant="ghost" size="sm" className="text-rust hover:text-rust"
+                  onClick={() => { setDeleteTarget(t); setDeleteStage(1); }}>
+                  <Trash2 className="mr-1 h-4 w-4" /> Delete team
                 </Button>
               </div>
             </div>
@@ -523,6 +538,29 @@ function TeamsTab({
               <Button variant="destructive" onClick={() => setConfirmStage(2)}>Continue</Button>
             ) : (
               <Button variant="destructive" onClick={doReset}>Yes, delete all</Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) { setDeleteTarget(null); setDeleteStage(0); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {deleteStage === 1 ? `Delete ${deleteTarget?.name}?` : `Really delete ${deleteTarget?.name}?`}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-ink/70">
+            {deleteStage === 1
+              ? "This will permanently remove the team and every submission, photo, and point it has earned."
+              : "Final confirmation. The team and all of its data will be permanently deleted."}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setDeleteTarget(null); setDeleteStage(0); }}>Cancel</Button>
+            {deleteStage === 1 ? (
+              <Button variant="destructive" onClick={() => setDeleteStage(2)}>Continue</Button>
+            ) : (
+              <Button variant="destructive" onClick={doDelete}>Yes, delete team</Button>
             )}
           </DialogFooter>
         </DialogContent>

@@ -73,6 +73,30 @@ export const adminResetTeam = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const adminDeleteTeam = createServerFn({ method: "POST" })
+  .inputValidator((data) =>
+    z.object({ passcode: z.string().min(1).max(100), teamId: z.string().uuid() }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    verify(data.passcode);
+    const sb = await admin();
+    const { data: subs, error: subsErr } = await sb
+      .from("submissions")
+      .select("id")
+      .eq("team_id", data.teamId);
+    if (subsErr) throw new Error(subsErr.message);
+    const subIds = (subs ?? []).map((s) => s.id);
+    if (subIds.length > 0) {
+      const { error: daErr } = await sb.from("dolly_answers").delete().in("submission_id", subIds);
+      if (daErr) throw new Error(daErr.message);
+      const { error: sErr } = await sb.from("submissions").delete().eq("team_id", data.teamId);
+      if (sErr) throw new Error(sErr.message);
+    }
+    const { error } = await sb.from("teams").delete().eq("id", data.teamId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const adminCreateTeam = createServerFn({ method: "POST" })
   .inputValidator((data) =>
     z
