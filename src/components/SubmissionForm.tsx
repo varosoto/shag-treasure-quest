@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import type { Submission, Task } from "@/lib/types";
-import { dollyLines, scoreLine } from "@/lib/dolly";
+import type { StoredTeam } from "@/lib/team";
+import { dollyLines } from "@/lib/dolly";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  requestPhotoUpload,
+  saveDolly,
+  saveSubmission,
+} from "@/lib/hunt.functions";
 
 type Props = {
   task: Task;
-  teamId: string;
+  team: StoredTeam;
   existing: Submission | null;
   onSaved: (s: Submission) => void;
 };
 
-export function SubmissionForm({ task, teamId, existing, onSaved }: Props) {
+export function SubmissionForm({ task, team, existing, onSaved }: Props) {
   const isDolly = task.id === "challenge-dolly";
   const isChallenge = task.type === "challenge";
   const [editing, setEditing] = useState(!existing);
@@ -20,6 +26,9 @@ export function SubmissionForm({ task, teamId, existing, onSaved }: Props) {
   const [bonus, setBonus] = useState(existing?.bonus_claimed ?? false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const reqUpload = useServerFn(requestPhotoUpload);
+  const save = useServerFn(saveSubmission);
 
   useEffect(() => {
     if (!file) return;
@@ -48,7 +57,7 @@ export function SubmissionForm({ task, teamId, existing, onSaved }: Props) {
   }
 
   if (isDolly) {
-    return <DollyForm task={task} teamId={teamId} existing={existing} onSaved={onSaved} />;
+    return <DollyForm task={task} team={team} existing={existing} onSaved={onSaved} />;
   }
 
   async function submit(e: React.FormEvent) {
@@ -58,33 +67,34 @@ export function SubmissionForm({ task, teamId, existing, onSaved }: Props) {
     try {
       let photoUrl = existing?.photo_url ?? null;
       if (file) {
-        const ext = file.name.split(".").pop() || "jpg";
-        const path = `${teamId}/${task.id}-${Date.now()}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("submission-photos")
-          .upload(path, file, { upsert: true, contentType: file.type });
-        if (upErr) throw upErr;
-        const { data } = supabase.storage.from("submission-photos").getPublicUrl(path);
-        photoUrl = data.publicUrl;
-      }
-      const awarded = task.base_points + (bonus ? task.max_bonus_points ?? 0 : 0);
-      const { data, error: dbErr } = await supabase
-        .from("submissions")
-        .upsert(
-          {
-            team_id: teamId,
-            task_id: task.id,
-            photo_url: photoUrl,
-            notes,
-            bonus_claimed: bonus,
-            awarded_points: awarded,
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const req = await reqUpload({
+          data: {
+            teamId: team.id,
+            passcode: team.passcode,
+            taskId: task.id,
+            ext: ext || "jpg",
           },
-          { onConflict: "team_id,task_id" },
-        )
-        .select()
-        .single();
-      if (dbErr) throw dbErr;
-      onSaved(data as Submission);
+        });
+        const upRes = await fetch(req.signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "application/octet-stream" },
+          body: file,
+        });
+        if (!upRes.ok) throw new Error(`Upload failed (${upRes.status})`);
+        photoUrl = req.publicUrl;
+      }
+      const row = await save({
+        data: {
+          teamId: team.id,
+          passcode: team.passcode,
+          taskId: task.id,
+          photoUrl,
+          notes,
+          bonusClaimed: bonus,
+        },
+      });
+      onSaved(row as Submission);
       setEditing(false);
       setFile(null);
     } catch (err) {
@@ -165,50 +175,28 @@ export function SubmissionForm({ task, teamId, existing, onSaved }: Props) {
   );
 }
 
-function DollyForm({ task, teamId, existing, onSaved }: Props) {
+function DollyForm({ task, team, existing, onSaved }: Props) {
   const [answers, setAnswers] = useState<string[]>(() => Array(dollyLines.length).fill(""));
   const [results, setResults] = useState<boolean[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [submitted, setSubmitted] = useState(!!existing);
   const [error, setError] = useState<string | null>(null);
+  const save = useServerFn(saveDolly);
 
-  function check() {
-    setResults(answers.map((a, i) => scoreLine(a, dollyLines[i].answer)));
-  }
-
-  async function save() {
-    if (!results) return;
+  async function submit() {
     setBusy(true);
     setError(null);
     try {
-      const correct = results.filter(Boolean).length;
-      const awarded = Math.round((correct / dollyLines.length) * 100);
-      const { data, error: dbErr } = await supabase
-        .from("submissions")
-        .upsert(
-          {
-            team_id: teamId,
-            task_id: task.id,
-            notes: `Dolly score: ${correct}/${dollyLines.length}`,
-            awarded_points: awarded,
-            bonus_claimed: false,
-          },
-          { onConflict: "team_id,task_id" },
-        )
-        .select()
-        .single();
-      if (dbErr) throw dbErr;
-      // wipe and rewrite dolly_answers
-      await supabase.from("dolly_answers").delete().eq("submission_id", (data as Submission).id);
-      await supabase.from("dolly_answers").insert(
-        answers.map((a, i) => ({
-          submission_id: (data as Submission).id,
-          line_num: i + 1,
-          answer_text: a,
-          is_correct: results[i],
-        })),
-      );
-      onSaved(data as Submission);
+      const res = await save({
+        data: {
+          teamId: team.id,
+          passcode: team.passcode,
+          taskId: task.id,
+          answers,
+        },
+      });
+      setResults(res.results);
+      onSaved(res.submission as Submission);
       setSubmitted(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -248,25 +236,14 @@ function DollyForm({ task, teamId, existing, onSaved }: Props) {
       })}
       {error && <div className="text-sm text-rust">{error}</div>}
       {!submitted && (
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={check}
-            className="flex-1 rounded-lg bg-gold px-4 py-3 font-mono text-xs uppercase tracking-wider text-ink"
-          >
-            Check My Lyrics
-          </button>
-          {results && (
-            <button
-              type="button"
-              onClick={save}
-              disabled={busy}
-              className="flex-1 rounded-lg bg-rust px-4 py-3 font-mono text-xs uppercase tracking-wider text-white disabled:opacity-50"
-            >
-              {busy ? "Saving…" : "Save Score"}
-            </button>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy}
+          className="w-full rounded-lg bg-rust px-4 py-3 font-mono text-xs uppercase tracking-wider text-white disabled:opacity-50"
+        >
+          {busy ? "Scoring…" : "Submit Lyrics"}
+        </button>
       )}
       {submitted && existing && (
         <div className="rounded-lg bg-[#f0f8f7] p-3 font-mono text-xs uppercase text-teal">
