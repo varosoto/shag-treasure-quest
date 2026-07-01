@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Submission, Task } from "@/lib/types";
 import type { StoredTeam } from "@/lib/team";
 import { dollyLines } from "@/lib/dolly";
@@ -21,7 +21,17 @@ export function SubmissionForm({ task, team, existing, onSaved }: Props) {
   const isChallenge = task.type === "challenge";
   const [editing, setEditing] = useState(!existing);
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(existing?.photo_url ?? null);
+  const preview = useMemo(() => {
+    if (file) return URL.createObjectURL(file);
+    return existing?.photo_url ?? null;
+  }, [file, existing?.photo_url]);
+
+  useEffect(() => {
+    if (file && preview?.startsWith("blob:")) {
+      return () => URL.revokeObjectURL(preview);
+    }
+  }, [file, preview]);
+
   const [notes, setNotes] = useState(existing?.notes ?? "");
   const [bonus, setBonus] = useState(existing?.bonus_claimed ?? false);
   const [busy, setBusy] = useState(false);
@@ -29,13 +39,6 @@ export function SubmissionForm({ task, team, existing, onSaved }: Props) {
 
   const reqUpload = useServerFn(requestPhotoUpload);
   const save = useServerFn(saveSubmission);
-
-  useEffect(() => {
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
 
   if (existing && !editing && !isDolly) {
     return (
