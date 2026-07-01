@@ -142,8 +142,8 @@ function Hunt() {
 
         <div className="flex items-center gap-3 my-8">
           <div className="h-px flex-1 bg-rust/30" />
-          <span className="font-mono text-xs uppercase tracking-widest text-rust">
-            ✂️ Hairstylist Challenges
+          <span className="font-mono text-xs uppercase tracking-[0.35em] text-rust">
+            ✂️ H A I R  D A R E S
           </span>
           <div className="h-px flex-1 bg-rust/30" />
         </div>
