@@ -37,6 +37,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
+import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
+
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -530,30 +532,27 @@ function TeamsTab({
 }
 
 function ActivityTab({
-  passcode, teamMap, taskMap,
+  teamMap, taskMap,
 }: {
   passcode: string;
   teamMap: Map<string, TeamRow>;
   taskMap: Map<string, TaskRow>;
 }) {
-  const listAll = useServerFn(adminListAll);
-  const [rows, setRows] = useState<SubRow[]>([]);
-
-  useEffect(() => {
-    let alive = true;
-    async function load() {
-      const res = await listAll({ data: { passcode } });
-      if (!alive) return;
-      setRows((res.submissions as SubRow[]).slice(0, 50));
-    }
-    load();
-    const i = setInterval(load, 5000);
-    return () => { alive = false; clearInterval(i); };
-  }, [listAll, passcode]);
+  const { submissions, connected } = useRealtimeSubmissions();
+  const rows = useMemo(() => submissions.slice(0, 50), [submissions]);
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="font-mono text-xs text-ink/50">Auto-refresh · 5s · {rows.length} events</div>
+      <div className="flex items-center justify-between">
+        <div className="font-mono text-xs text-ink/50">{rows.length} events</div>
+        <span
+          className={`font-mono text-[10px] uppercase tracking-widest ${
+            connected ? "text-teal" : "text-ink/40"
+          }`}
+        >
+          {connected ? "🟢 Live" : "🟡 Reconnecting…"}
+        </span>
+      </div>
       {rows.map((r) => (
         <div key={r.id} className="flex items-center gap-4 bg-white border border-ink/10 rounded-xl p-3">
           {r.photo_url ? (
@@ -575,6 +574,7 @@ function ActivityTab({
     </div>
   );
 }
+
 
 function timeAgo(iso: string) {
   const s = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { clearStoredTeam, getStoredTeam } from "@/lib/team";
 import type { Submission, Task } from "@/lib/types";
 import { TaskCard } from "@/components/TaskCard";
+import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
 
 export const Route = createFileRoute("/hunt")({
   component: Hunt,
@@ -13,10 +14,19 @@ function Hunt() {
   const navigate = useNavigate();
   const [team, setTeam] = useState(() => getStoredTeam());
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [subs, setSubs] = useState<Record<string, Submission>>({});
   const [loading, setLoading] = useState(true);
   const [showWin, setShowWin] = useState(false);
   const [startTs] = useState(() => Date.now());
+
+  const { submissions } = useRealtimeSubmissions({ teamId: team?.id });
+
+  const subs = useMemo(() => {
+    const map: Record<string, Submission> = {};
+    submissions.forEach((s) => {
+      map[s.task_id] = s;
+    });
+    return map;
+  }, [submissions]);
 
   useEffect(() => {
     if (!team) {
@@ -24,14 +34,8 @@ function Hunt() {
       return;
     }
     (async () => {
-      const [{ data: t }, { data: s }] = await Promise.all([
-        supabase.from("tasks").select("*").order("order_num"),
-        supabase.from("submissions").select("*").eq("team_id", team.id).is("deleted_at", null),
-      ]);
+      const { data: t } = await supabase.from("tasks").select("*").order("order_num");
       setTasks((t ?? []) as Task[]);
-      const map: Record<string, Submission> = {};
-      (s ?? []).forEach((row) => (map[row.task_id] = row as Submission));
-      setSubs(map);
       setLoading(false);
     })();
   }, [team, navigate]);
@@ -47,9 +51,11 @@ function Hunt() {
     if (done === total && total > 0 && !showWin) setShowWin(true);
   }, [done, total, showWin]);
 
-  function handleSaved(s: Submission) {
-    setSubs((prev) => ({ ...prev, [s.task_id]: s }));
+  function handleSaved(_s: Submission) {
+    // Realtime subscription will pick up the change; no local state needed.
   }
+
+
 
   if (!team) return null;
 

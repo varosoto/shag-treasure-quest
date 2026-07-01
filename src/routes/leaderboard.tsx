@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useMemo } from "react";
+import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
+import { useRealtimeTeams } from "@/hooks/useRealtimeTeams";
 
 export const Route = createFileRoute("/leaderboard")({
   component: Leaderboard,
@@ -9,37 +10,27 @@ export const Route = createFileRoute("/leaderboard")({
 type Row = { id: string; name: string; points: number; done: number };
 
 function Leaderboard() {
-  const [rows, setRows] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { teams, connected: teamsConnected } = useRealtimeTeams();
+  const { submissions, connected: subsConnected } = useRealtimeSubmissions();
+  const connected = teamsConnected && subsConnected;
 
-  async function load() {
-    const [{ data: teams }, { data: subs }] = await Promise.all([
-      supabase.from("teams").select("id,name"),
-      supabase.from("submissions").select("team_id,awarded_points").is("deleted_at", null),
-    ]);
+  const rows = useMemo<Row[]>(() => {
     const map = new Map<string, { points: number; done: number }>();
-    (subs ?? []).forEach((s) => {
+    submissions.forEach((s) => {
       const cur = map.get(s.team_id) ?? { points: 0, done: 0 };
       cur.points += s.awarded_points ?? 0;
       cur.done += 1;
       map.set(s.team_id, cur);
     });
-    const out: Row[] = (teams ?? []).map((t) => ({
+    const out: Row[] = teams.map((t) => ({
       id: t.id,
       name: t.name,
       points: map.get(t.id)?.points ?? 0,
       done: map.get(t.id)?.done ?? 0,
     }));
     out.sort((a, b) => b.points - a.points);
-    setRows(out);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    load();
-    const i = setInterval(load, 15000);
-    return () => clearInterval(i);
-  }, []);
+    return out;
+  }, [teams, submissions]);
 
   const medals = ["🥇", "🥈", "🥉"];
 
@@ -50,9 +41,7 @@ function Leaderboard() {
           <Link to="/hunt" className="font-mono text-xs uppercase text-cream/70">
             ← Back to Hunt
           </Link>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-gold/80">
-            Auto-refresh · 15s
-          </span>
+          <LiveIndicator connected={connected} />
         </div>
         <div className="max-w-md mx-auto mt-4">
           <h1 className="font-serif text-4xl">Leaderboard</h1>
@@ -60,8 +49,7 @@ function Leaderboard() {
       </header>
 
       <div className="max-w-md mx-auto px-5 py-6 space-y-3">
-        {loading && <p className="text-center text-ink/50 py-6">Loading…</p>}
-        {!loading && rows.length === 0 && (
+        {rows.length === 0 && (
           <p className="text-center text-ink/50 py-6">No teams yet.</p>
         )}
         {rows.map((r, i) => (
@@ -97,5 +85,17 @@ function Leaderboard() {
         ))}
       </div>
     </div>
+  );
+}
+
+export function LiveIndicator({ connected }: { connected: boolean }) {
+  return (
+    <span
+      className={`font-mono text-[10px] uppercase tracking-widest ${
+        connected ? "text-gold/90" : "text-cream/50"
+      }`}
+    >
+      {connected ? "🟢 Live" : "🟡 Reconnecting…"}
+    </span>
   );
 }
