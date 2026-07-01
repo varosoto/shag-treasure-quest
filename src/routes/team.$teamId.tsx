@@ -35,10 +35,11 @@ function TeamDetail() {
   return (
     <div className="min-h-screen bg-cream pb-10">
       <header className="bg-ink text-cream px-5 py-6">
-        <div className="max-w-md mx-auto flex items-center justify-between">
+        <div className="max-w-md mx-auto flex items-center justify-between mb-3">
           <Link to="/leaderboard" className="font-mono text-xs uppercase text-cream/70">
             ← Leaderboard
           </Link>
+          <ShagLogo onDark />
         </div>
         <div className="max-w-md mx-auto mt-4">
           <h1 className="font-serif text-4xl">{teamName}</h1>
