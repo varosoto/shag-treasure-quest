@@ -37,7 +37,7 @@ export const adminUpdateSubmission = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     verify(data.passcode);
     const sb = await admin();
-    const patch: Record<string, unknown> = {};
+    const patch: { awarded_points?: number; bonus_claimed?: boolean } = {};
     if (data.awardedPoints !== undefined) patch.awarded_points = data.awardedPoints;
     if (data.bonusClaimed !== undefined) patch.bonus_claimed = data.bonusClaimed;
     if (Object.keys(patch).length === 0) return { ok: true };
