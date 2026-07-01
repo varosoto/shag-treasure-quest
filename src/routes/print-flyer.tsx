@@ -14,15 +14,17 @@ export const Route = createFileRoute("/print-flyer")({
 
 function PrintFlyer() {
   const [origin, setOrigin] = useState("https://seaholm.hunt");
+  const [today, setToday] = useState("");
   useEffect(() => {
     if (typeof window !== "undefined") setOrigin(window.location.origin);
+    setToday(
+      new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    );
   }, []);
-
-  const today = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 
   return (
     <div className="flyer-root min-h-screen bg-ink text-cream relative flex items-center justify-center p-10 print:p-6">
