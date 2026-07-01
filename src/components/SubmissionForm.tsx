@@ -128,8 +128,9 @@ export function SubmissionForm({ task, team, existing, onSaved }: Props) {
       </div>
       <div>
         <label className="block font-mono text-xs uppercase tracking-wide text-ink/70 mb-1.5">
-          Your story
+          Comments
         </label>
+
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}

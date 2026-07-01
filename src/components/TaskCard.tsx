@@ -30,6 +30,11 @@ export function TaskCard({ task, team, submission, onSaved }: Props) {
   const bgClr = submitted ? "bg-[#f0f8f7]" : "bg-white";
   const iconBg = isChallenge ? "#f5c6b0" : iconBgByStop[task.order_num] ?? "#e0ebe9";
 
+  const displayTitle = submitted
+    ? `Challenge ${task.order_num} · ${task.title}`
+    : `Challenge ${task.order_num}`;
+  const showSubtitle = isChallenge && task.subtitle;
+
   return (
     <div className={`rounded-2xl border-[1.5px] ${borderClr} ${bgClr} overflow-hidden`}>
       <button
@@ -46,7 +51,7 @@ export function TaskCard({ task, team, submission, onSaved }: Props) {
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-serif text-lg leading-tight">{task.title}</h3>
+            <h3 className="font-serif text-lg leading-tight">{displayTitle}</h3>
             <span className="font-mono text-[10px] uppercase bg-gold/20 text-ink px-1.5 py-0.5 rounded">
               {task.base_points}
               {task.max_bonus_points ? `+${task.max_bonus_points}` : ""} pts
@@ -57,10 +62,11 @@ export function TaskCard({ task, team, submission, onSaved }: Props) {
               </span>
             )}
           </div>
-          {task.subtitle && (
+          {showSubtitle && (
             <p className="font-mono text-[11px] uppercase text-ink/50 mt-0.5 truncate">{task.subtitle}</p>
           )}
         </div>
+
         <span className={`text-ink/40 transition-transform ${open ? "rotate-180" : ""}`}>▾</span>
       </button>
 
@@ -98,18 +104,8 @@ export function TaskCard({ task, team, submission, onSaved }: Props) {
             </div>
           )}
 
-          {task.map_url && (
-            <a
-              href={task.map_url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block font-mono text-xs uppercase tracking-wider text-teal underline"
-            >
-              📍 Open in Google Maps
-            </a>
-          )}
-
           <SubmissionForm task={task} team={team} existing={submission} onSaved={onSaved} />
+
         </div>
       )}
     </div>

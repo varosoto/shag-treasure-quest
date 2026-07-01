@@ -310,7 +310,7 @@ function SubmissionsTab({
               <SortHeader k="team">Team</SortHeader>
               <SortHeader k="task">Task</SortHeader>
               <TableHead>Photo</TableHead>
-              <TableHead>Notes</TableHead>
+              <TableHead>Comments</TableHead>
               <SortHeader k="bonus">Bonus</SortHeader>
               <SortHeader k="points">Points</SortHeader>
               <SortHeader k="submitted_at">Submitted</SortHeader>
