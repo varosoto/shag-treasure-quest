@@ -26,7 +26,7 @@ function Hunt() {
     (async () => {
       const [{ data: t }, { data: s }] = await Promise.all([
         supabase.from("tasks").select("*").order("order_num"),
-        supabase.from("submissions").select("*").eq("team_id", team.id),
+        supabase.from("submissions").select("*").eq("team_id", team.id).is("deleted_at", null),
       ]);
       setTasks((t ?? []) as Task[]);
       const map: Record<string, Submission> = {};
@@ -148,6 +148,12 @@ function Hunt() {
             onSaved={handleSaved}
           />
         ))}
+
+        <footer className="pt-8 pb-2 text-center">
+          <Link to="/admin" className="font-mono text-xs text-ink/40 hover:text-ink/60">
+            Admin
+          </Link>
+        </footer>
       </main>
 
       {showWin && (
