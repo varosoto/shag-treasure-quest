@@ -9,10 +9,10 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const navigate = useNavigate();
-  const [origin, setOrigin] = useState<string>("https://seaholm.hunt");
+  const [joinUrl, setJoinUrl] = useState<string>("https://seaholm.hunt/join-team");
 
   useEffect(() => {
-    if (typeof window !== "undefined") setOrigin(window.location.origin);
+    if (typeof window !== "undefined") setJoinUrl(`${window.location.origin}/join-team`);
     if (getStoredTeam()) navigate({ to: "/hunt" });
   }, [navigate]);
 
@@ -53,7 +53,7 @@ function Landing() {
             <div className="bg-cream rounded-2xl border border-gold/40 p-6 flex flex-col items-center">
               <div className="bg-cream p-2 rounded-lg">
                 <QRCodeSVG
-                  value={origin}
+                  value={joinUrl}
                   size={200}
                   bgColor="#faf6f0"
                   fgColor="#1c1c1a"
