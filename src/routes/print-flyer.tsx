@@ -13,10 +13,10 @@ export const Route = createFileRoute("/print-flyer")({
 });
 
 function PrintFlyer() {
-  const [origin, setOrigin] = useState("https://seaholm.hunt");
+  const [joinUrl, setJoinUrl] = useState("https://seaholm.hunt/join-team");
   const [today, setToday] = useState("");
   useEffect(() => {
-    if (typeof window !== "undefined") setOrigin(window.location.origin);
+    if (typeof window !== "undefined") setJoinUrl(`${window.location.origin}/join-team`);
     setToday(
       new Date().toLocaleDateString("en-US", {
         year: "numeric",
@@ -61,7 +61,7 @@ function PrintFlyer() {
         <div className="flex justify-center">
           <div className="bg-cream rounded-2xl p-10 inline-block">
             <QRCodeSVG
-              value={origin}
+              value={joinUrl}
               size={400}
               bgColor="#faf6f0"
               fgColor="#1c1c1a"
@@ -72,7 +72,7 @@ function PrintFlyer() {
 
         <ol className="font-mono text-sm uppercase tracking-widest text-cream/90 space-y-2">
           <li>1 · Scan the code with your phone camera</li>
-          <li>2 · Tap "Start a new team" and pick a passcode</li>
+          <li>2 · Tap "Join existing team" and enter your team name + passcode</li>
           <li>3 · Race your friends through 10 stops + 4 hair dares</li>
         </ol>
 
