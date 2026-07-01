@@ -87,8 +87,8 @@ function Landing() {
 
         <p className="mt-10 text-sm text-ink/70 leading-relaxed">
           Gather your crew, pick a passcode, and hit the streets of Seaholm. Snap
-          photos at each stop, complete the hairstylist dares, and race to the top
-          of the leaderboard.
+          photos at each challenge, complete the hair dares, and race to the top
+          of the leaderboard. Old is new again — timeless Austin, styled by Shag.
         </p>
       </div>
 
