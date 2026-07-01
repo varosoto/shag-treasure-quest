@@ -9,12 +9,14 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const navigate = useNavigate();
-  const [joinUrl, setJoinUrl] = useState<string>("https://seaholm.hunt/join-team");
+  const [origin, setOrigin] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") setJoinUrl(`${window.location.origin}/join-team`);
+    setOrigin(window.location.origin);
     if (getStoredTeam()) navigate({ to: "/hunt" });
   }, [navigate]);
+
+  const url = origin ?? "https://shag-treasure-quest.lovable.app";
 
   return (
     <div className="min-h-screen bg-cream">
@@ -52,16 +54,27 @@ function Landing() {
           <div className="flex-1 md:max-w-[260px]">
             <div className="bg-cream rounded-2xl border border-gold/40 p-6 flex flex-col items-center">
               <div className="bg-cream p-2 rounded-lg">
-                <QRCodeSVG
-                  value={joinUrl}
-                  size={200}
-                  bgColor="#faf6f0"
-                  fgColor="#1c1c1a"
-                  level="M"
-                />
+                {origin ? (
+                  <QRCodeSVG
+                    value={url}
+                    size={200}
+                    bgColor="#faf6f0"
+                    fgColor="#1c1c1a"
+                    level="M"
+                  />
+                ) : (
+                  <div className="w-[200px] h-[200px] bg-cream flex items-center justify-center rounded-lg border border-ink/10">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-ink/40">
+                      Loading QR…
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="mt-4 font-mono text-xs uppercase tracking-widest text-ink/60 text-center">
                 Scan to join the hunt
+              </div>
+              <div className="mt-2 font-mono text-xs text-ink/50 text-center break-all">
+                {url.replace(/^https?:\/\//, "")}
               </div>
               <a
                 href="/print-flyer"
