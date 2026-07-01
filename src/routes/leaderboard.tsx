@@ -38,14 +38,17 @@ function Leaderboard() {
   return (
     <div className="min-h-screen bg-cream pb-10">
       <header className="bg-ink text-cream px-5 py-6">
+        <div className="max-w-md mx-auto flex items-center justify-between mb-4">
+          <ShagLogo onDark />
+          <LiveIndicator connected={connected} />
+        </div>
         <div className="max-w-md mx-auto flex items-center justify-between">
           <Link to="/hunt" className="font-mono text-xs uppercase text-cream/70">
             ← Back to Hunt
           </Link>
-          <LiveIndicator connected={connected} />
         </div>
         <div className="max-w-md mx-auto mt-4">
-          <h1 className="font-serif text-4xl">Leaderboard</h1>
+          <h1 className="font-serif text-4xl tracking-[0.05em]">Leaderboard</h1>
         </div>
       </header>
 
