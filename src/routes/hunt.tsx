@@ -148,6 +148,12 @@ function Hunt() {
             onSaved={handleSaved}
           />
         ))}
+
+        <footer className="pt-8 pb-2 text-center">
+          <Link to="/admin" className="font-mono text-xs text-ink/40 hover:text-ink/60">
+            Admin
+          </Link>
+        </footer>
       </main>
 
       {showWin && (

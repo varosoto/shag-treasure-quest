@@ -19,7 +19,7 @@ function TeamDetail() {
       const [{ data: team }, { data: t }, { data: s }] = await Promise.all([
         supabase.from("teams").select("name").eq("id", teamId).maybeSingle(),
         supabase.from("tasks").select("*").order("order_num"),
-        supabase.from("submissions").select("*").eq("team_id", teamId),
+        supabase.from("submissions").select("*").eq("team_id", teamId).is("deleted_at", null),
       ]);
       setTeamName(team?.name ?? "Unknown team");
       setTasks((t ?? []) as Task[]);
