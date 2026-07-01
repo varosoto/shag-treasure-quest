@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
 import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
+import { ShagLogo } from "@/components/brand";
 
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
