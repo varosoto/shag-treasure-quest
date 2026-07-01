@@ -13,10 +13,10 @@ export const Route = createFileRoute("/print-flyer")({
 });
 
 function PrintFlyer() {
-  const [joinUrl, setJoinUrl] = useState("https://seaholm.hunt/join-team");
+  const [origin, setOrigin] = useState<string | null>(null);
   const [today, setToday] = useState("");
   useEffect(() => {
-    if (typeof window !== "undefined") setJoinUrl(`${window.location.origin}/join-team`);
+    setOrigin(window.location.origin);
     setToday(
       new Date().toLocaleDateString("en-US", {
         year: "numeric",
@@ -25,6 +25,8 @@ function PrintFlyer() {
       }),
     );
   }, []);
+
+  const url = origin ?? "https://shag-treasure-quest.lovable.app";
 
   return (
     <div className="flyer-root min-h-screen bg-ink text-cream relative flex items-center justify-center p-10 print:p-6">
@@ -59,14 +61,25 @@ function PrintFlyer() {
         </p>
 
         <div className="flex justify-center">
-          <div className="bg-cream rounded-2xl p-10 inline-block">
-            <QRCodeSVG
-              value={joinUrl}
-              size={400}
-              bgColor="#faf6f0"
-              fgColor="#1c1c1a"
-              level="M"
-            />
+          <div className="bg-cream rounded-2xl p-10 inline-block text-center">
+            {origin ? (
+              <QRCodeSVG
+                value={url}
+                size={400}
+                bgColor="#faf6f0"
+                fgColor="#1c1c1a"
+                level="M"
+              />
+            ) : (
+              <div className="w-[400px] h-[400px] bg-cream flex items-center justify-center rounded-lg border border-ink/10">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-ink/40">
+                  Loading QR…
+                </span>
+              </div>
+            )}
+            <div className="mt-3 font-mono text-xs text-ink/50 text-center break-all">
+              {url.replace(/^https?:\/\//, "")}
+            </div>
           </div>
         </div>
 
