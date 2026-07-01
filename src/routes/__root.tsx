@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { BrandFooter } from "@/components/brand";
 
 function NotFoundComponent() {
   return (
@@ -72,16 +73,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Seaholm Scavenger Hunt" },
-      { name: "description", content: "Seaholm Scavenger Hunt" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Seaholm Scavenger Hunt" },
-      { property: "og:description", content: "Seaholm Scavenger Hunt" },
+      { title: "SHAG × Seaholm Scavenger Hunt" },
+      { name: "description", content: "A team scavenger hunt through Austin's Seaholm district, presented by Shag Salon — where hair matters." },
+      { name: "author", content: "Shag Salon Austin" },
+      { property: "og:title", content: "SHAG × Seaholm Scavenger Hunt" },
+      { property: "og:description", content: "14 challenges through the Seaholm district. Presented by Shag Salon Austin — where hair matters." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Seaholm Scavenger Hunt" },
-      { name: "twitter:description", content: "Seaholm Scavenger Hunt" },
+      { name: "twitter:site", content: "@shagaustin" },
+      { name: "twitter:title", content: "SHAG × Seaholm Scavenger Hunt" },
+      { name: "twitter:description", content: "14 challenges through the Seaholm district. Presented by Shag Salon Austin." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9fb4698e-d11e-4b71-a51f-d912b684da81/id-preview-70c67cbd--e1379ed4-6976-4f4d-8aa1-91040256d65c.lovable.app-1779591547370.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9fb4698e-d11e-4b71-a51f-d912b684da81/id-preview-70c67cbd--e1379ed4-6976-4f4d-8aa1-91040256d65c.lovable.app-1779591547370.png" },
     ],
@@ -117,7 +118,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        <BrandFooter />
+      </div>
     </QueryClientProvider>
   );
 }

@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getStoredTeam, setStoredTeam } from "@/lib/team";
 import { useRealtimeTeams } from "@/hooks/useRealtimeTeams";
 import { joinTeam } from "@/lib/hunt.functions";
+import { ShagLogo, EventTitle } from "@/components/brand";
 import {
   Dialog,
   DialogContent,
@@ -30,7 +31,8 @@ function Landing() {
     <div className="min-h-screen bg-cream">
       <div className="bg-ink text-cream px-6 pt-6 pb-20">
         <div className="max-w-md mx-auto">
-          <div className="flex justify-end mb-6">
+          <div className="flex justify-between items-center mb-8">
+            <ShagLogo onDark />
             <Link
               to="/start-team"
               className="font-mono uppercase text-[10px] tracking-widest border border-gold/40 text-gold px-3 py-1.5 rounded-full hover:bg-gold/10"
@@ -41,17 +43,23 @@ function Landing() {
           <div className="inline-block font-mono text-[10px] uppercase tracking-widest text-gold border border-gold/40 rounded-full px-3 py-1 mb-6">
             🌊 Austin, Texas · Seaholm District
           </div>
-          <h1 className="font-serif text-5xl leading-[0.95] mb-3">
-            The <em className="text-gold">Seaholm</em> Scavenger Hunt
-          </h1>
-          <p className="text-cream/70 text-sm leading-relaxed">
-            10 stops · 4 hairstylist challenges · Keep Austin Styled 💇
+          <EventTitle size="lg" />
+          <p className="text-cream/70 text-xs mt-5 font-mono uppercase tracking-[0.2em]">
+            14 Challenges · Where Hair Matters · Austin, TX
           </p>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-6 -mt-10 pb-16">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-ink/50 mb-3">
+        <div className="text-center mb-2">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-ink/50">
+            Presented by
+          </div>
+          <div className="mt-1 flex justify-center">
+            <ShagLogo />
+          </div>
+        </div>
+        <div className="font-mono text-[10px] uppercase tracking-widest text-ink/50 mb-3 mt-6">
           Join a team
         </div>
         {sorted.length === 0 ? (
@@ -79,8 +87,8 @@ function Landing() {
 
         <p className="mt-10 text-sm text-ink/70 leading-relaxed">
           Gather your crew, pick a passcode, and hit the streets of Seaholm. Snap
-          photos at each stop, complete the hairstylist dares, and race to the top
-          of the leaderboard.
+          photos at each challenge, complete the hair dares, and race to the top
+          of the leaderboard. Old is new again — timeless Austin, styled by Shag.
         </p>
       </div>
 

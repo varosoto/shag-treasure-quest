@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
 import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
+import { ShagLogo } from "@/components/brand";
 
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
@@ -160,10 +161,13 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
   return (
     <div className="min-h-screen bg-cream">
       <header className="bg-ink text-cream px-5 py-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div>
-            <div className="font-mono text-[10px] uppercase tracking-widest text-gold">Admin</div>
-            <h1 className="font-serif text-3xl mt-1">Seaholm Control</h1>
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <ShagLogo onDark />
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-widest text-gold">Admin</div>
+              <h1 className="font-serif text-2xl md:text-3xl mt-0.5 tracking-[0.05em]">Shag × Seaholm Control</h1>
+            </div>
           </div>
           <div className="flex items-center gap-4 font-mono text-xs uppercase">
             <Link to="/hunt" className="text-cream/70 hover:text-cream">Hunt</Link>

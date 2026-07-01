@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { createTeam } from "@/lib/hunt.functions";
 import { setStoredTeam } from "@/lib/team";
+import { ShagLogo } from "@/components/brand";
 
 export const Route = createFileRoute("/start-team")({
   component: StartTeam,
@@ -81,10 +82,11 @@ export function FormShell({
   return (
     <div className="min-h-screen bg-cream">
       <div className="bg-ink text-cream px-6 py-6">
-        <div className="max-w-md mx-auto flex items-center gap-3">
+        <div className="max-w-md mx-auto flex items-center justify-between gap-3">
           <Link to="/" className="font-mono text-xs text-cream/70 uppercase">
             ← Back
           </Link>
+          <ShagLogo onDark />
         </div>
       </div>
       <div className="max-w-md mx-auto px-6 py-8">

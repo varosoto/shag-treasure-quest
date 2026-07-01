@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { clearStoredTeam, getStoredTeam } from "@/lib/team";
 import type { Submission, Task } from "@/lib/types";
 import { TaskCard } from "@/components/TaskCard";
+import { ShagLogo, EventTitle } from "@/components/brand";
 import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
 
 export const Route = createFileRoute("/hunt")({
@@ -70,10 +71,8 @@ function Hunt() {
         }}
       >
         <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-gold border border-gold/40 rounded-full px-2.5 py-0.5">
-              🌊 Seaholm District
-            </span>
+          <div className="flex items-center justify-between mb-6">
+            <ShagLogo onDark />
             <div className="flex items-center gap-3 font-mono text-[10px] uppercase text-cream/60">
               <Link to="/leaderboard" className="underline">
                 Leaderboard
@@ -89,9 +88,13 @@ function Hunt() {
               </button>
             </div>
           </div>
-          <h1 className="font-serif text-4xl leading-[0.95]">
-            The <em className="text-gold">Seaholm</em> Scavenger Hunt
-          </h1>
+          <span className="inline-block font-mono text-[10px] uppercase tracking-widest text-gold border border-gold/40 rounded-full px-2.5 py-0.5 mb-4">
+            🌊 Seaholm District
+          </span>
+          <EventTitle size="md" />
+          <p className="text-cream/70 text-[10px] mt-4 font-mono uppercase tracking-[0.2em]">
+            14 Challenges · Where Hair Matters · Austin, TX
+          </p>
           <p className="text-cream/70 text-xs mt-2 font-mono uppercase tracking-wider">
             Team · {team.name}
           </p>
@@ -139,8 +142,8 @@ function Hunt() {
 
         <div className="flex items-center gap-3 my-8">
           <div className="h-px flex-1 bg-rust/30" />
-          <span className="font-mono text-xs uppercase tracking-widest text-rust">
-            ✂️ Hairstylist Challenges
+          <span className="font-mono text-xs uppercase tracking-[0.35em] text-rust">
+            ✂️ H A I R  D A R E S
           </span>
           <div className="h-px flex-1 bg-rust/30" />
         </div>
@@ -168,9 +171,15 @@ function Hunt() {
             <div className="text-6xl mb-3">🏆</div>
             <h2 className="font-serif text-3xl mb-2">Hunt complete!</h2>
             <p className="text-ink/70 mb-4">Team {team.name}</p>
+            <div className="flex justify-center mb-4">
+              <ShagLogo />
+            </div>
             <div className="text-4xl font-serif text-teal mb-1">{points} pts</div>
-            <p className="font-mono text-xs uppercase text-ink/50 mb-6">
+            <p className="font-mono text-xs uppercase text-ink/50 mb-3">
               {Math.round((Date.now() - startTs) / 60000)} min elapsed
+            </p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/60 mb-6">
+              Presented by Shag — where hair matters.
             </p>
             <button
               onClick={() => setShowWin(false)}
