@@ -13,6 +13,7 @@ import { Route as StartTeamRouteImport } from './routes/start-team'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as JoinTeamRouteImport } from './routes/join-team'
 import { Route as HuntRouteImport } from './routes/hunt'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TeamTeamIdRouteImport } from './routes/team.$teamId'
 
@@ -36,6 +37,11 @@ const HuntRoute = HuntRouteImport.update({
   path: '/hunt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +55,7 @@ const TeamTeamIdRoute = TeamTeamIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/hunt': typeof HuntRoute
   '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/hunt': typeof HuntRoute
   '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/hunt': typeof HuntRoute
   '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -76,6 +85,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/hunt'
     | '/join-team'
     | '/leaderboard'
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/hunt'
     | '/join-team'
     | '/leaderboard'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/hunt'
     | '/join-team'
     | '/leaderboard'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   HuntRoute: typeof HuntRoute
   JoinTeamRoute: typeof JoinTeamRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HuntRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -157,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   HuntRoute: HuntRoute,
   JoinTeamRoute: JoinTeamRoute,
   LeaderboardRoute: LeaderboardRoute,
