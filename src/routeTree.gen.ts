@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StartTeamRouteImport } from './routes/start-team'
-import { Route as PrintFlyerRouteImport } from './routes/print-flyer'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as JoinTeamRouteImport } from './routes/join-team'
 import { Route as HuntRouteImport } from './routes/hunt'
@@ -21,11 +20,6 @@ import { Route as TeamTeamIdRouteImport } from './routes/team.$teamId'
 const StartTeamRoute = StartTeamRouteImport.update({
   id: '/start-team',
   path: '/start-team',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrintFlyerRoute = PrintFlyerRouteImport.update({
-  id: '/print-flyer',
-  path: '/print-flyer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -65,7 +59,6 @@ export interface FileRoutesByFullPath {
   '/hunt': typeof HuntRoute
   '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/print-flyer': typeof PrintFlyerRoute
   '/start-team': typeof StartTeamRoute
   '/team/$teamId': typeof TeamTeamIdRoute
 }
@@ -75,7 +68,6 @@ export interface FileRoutesByTo {
   '/hunt': typeof HuntRoute
   '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/print-flyer': typeof PrintFlyerRoute
   '/start-team': typeof StartTeamRoute
   '/team/$teamId': typeof TeamTeamIdRoute
 }
@@ -86,7 +78,6 @@ export interface FileRoutesById {
   '/hunt': typeof HuntRoute
   '/join-team': typeof JoinTeamRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/print-flyer': typeof PrintFlyerRoute
   '/start-team': typeof StartTeamRoute
   '/team/$teamId': typeof TeamTeamIdRoute
 }
@@ -98,7 +89,6 @@ export interface FileRouteTypes {
     | '/hunt'
     | '/join-team'
     | '/leaderboard'
-    | '/print-flyer'
     | '/start-team'
     | '/team/$teamId'
   fileRoutesByTo: FileRoutesByTo
@@ -108,7 +98,6 @@ export interface FileRouteTypes {
     | '/hunt'
     | '/join-team'
     | '/leaderboard'
-    | '/print-flyer'
     | '/start-team'
     | '/team/$teamId'
   id:
@@ -118,7 +107,6 @@ export interface FileRouteTypes {
     | '/hunt'
     | '/join-team'
     | '/leaderboard'
-    | '/print-flyer'
     | '/start-team'
     | '/team/$teamId'
   fileRoutesById: FileRoutesById
@@ -129,7 +117,6 @@ export interface RootRouteChildren {
   HuntRoute: typeof HuntRoute
   JoinTeamRoute: typeof JoinTeamRoute
   LeaderboardRoute: typeof LeaderboardRoute
-  PrintFlyerRoute: typeof PrintFlyerRoute
   StartTeamRoute: typeof StartTeamRoute
   TeamTeamIdRoute: typeof TeamTeamIdRoute
 }
@@ -141,13 +128,6 @@ declare module '@tanstack/react-router' {
       path: '/start-team'
       fullPath: '/start-team'
       preLoaderRoute: typeof StartTeamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/print-flyer': {
-      id: '/print-flyer'
-      path: '/print-flyer'
-      fullPath: '/print-flyer'
-      preLoaderRoute: typeof PrintFlyerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -201,7 +181,6 @@ const rootRouteChildren: RootRouteChildren = {
   HuntRoute: HuntRoute,
   JoinTeamRoute: JoinTeamRoute,
   LeaderboardRoute: LeaderboardRoute,
-  PrintFlyerRoute: PrintFlyerRoute,
   StartTeamRoute: StartTeamRoute,
   TeamTeamIdRoute: TeamTeamIdRoute,
 }
