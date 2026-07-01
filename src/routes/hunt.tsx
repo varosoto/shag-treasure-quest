@@ -171,9 +171,15 @@ function Hunt() {
             <div className="text-6xl mb-3">🏆</div>
             <h2 className="font-serif text-3xl mb-2">Hunt complete!</h2>
             <p className="text-ink/70 mb-4">Team {team.name}</p>
+            <div className="flex justify-center mb-4">
+              <ShagLogo />
+            </div>
             <div className="text-4xl font-serif text-teal mb-1">{points} pts</div>
-            <p className="font-mono text-xs uppercase text-ink/50 mb-6">
+            <p className="font-mono text-xs uppercase text-ink/50 mb-3">
               {Math.round((Date.now() - startTs) / 60000)} min elapsed
+            </p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/60 mb-6">
+              Presented by Shag — where hair matters.
             </p>
             <button
               onClick={() => setShowWin(false)}
