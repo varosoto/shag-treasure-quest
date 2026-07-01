@@ -109,7 +109,7 @@ export function TaskCard({ task, team, submission, onSaved }: Props) {
             </a>
           )}
 
-          <SubmissionForm task={task} teamId={teamId} existing={submission} onSaved={onSaved} />
+          <SubmissionForm task={task} team={team} existing={submission} onSaved={onSaved} />
         </div>
       )}
     </div>
