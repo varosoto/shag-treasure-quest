@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { createTeam } from "@/lib/hunt.functions";
 import { setStoredTeam } from "@/lib/team";
+import { ShagLogo } from "@/components/brand";
 
 export const Route = createFileRoute("/start-team")({
   component: StartTeam,
