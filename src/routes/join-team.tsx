@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { joinTeam } from "@/lib/hunt.functions";
 import { setStoredTeam } from "@/lib/team";
 import { FormShell } from "./start-team";
 
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/join-team")({
 
 function JoinTeam() {
   const navigate = useNavigate();
+  const join = useServerFn(joinTeam);
   const [name, setName] = useState("");
   const [passcode, setPasscode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -19,17 +21,15 @@ function JoinTeam() {
     e.preventDefault();
     setError(null);
     setBusy(true);
-    const { data, error: dbErr } = await supabase
-      .from("teams")
-      .select("id,name,passcode")
-      .eq("name", name.trim())
-      .maybeSingle();
-    setBusy(false);
-    if (dbErr) return setError(dbErr.message);
-    if (!data) return setError("Team not found.");
-    if (data.passcode !== passcode) return setError("Wrong passcode.");
-    setStoredTeam({ id: data.id, name: data.name });
-    navigate({ to: "/hunt" });
+    try {
+      const t = await join({ data: { name: name.trim(), passcode } });
+      setStoredTeam(t);
+      navigate({ to: "/hunt" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (

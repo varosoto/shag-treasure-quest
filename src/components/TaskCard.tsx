@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Submission, Task } from "@/lib/types";
+import type { StoredTeam } from "@/lib/team";
 import { SubmissionForm } from "./SubmissionForm";
 
 const iconBgByStop: Record<number, string> = {
@@ -10,12 +11,12 @@ const iconBgByStop: Record<number, string> = {
 
 type Props = {
   task: Task;
-  teamId: string;
+  team: StoredTeam;
   submission: Submission | null;
   onSaved: (s: Submission) => void;
 };
 
-export function TaskCard({ task, teamId, submission, onSaved }: Props) {
+export function TaskCard({ task, team, submission, onSaved }: Props) {
   const isChallenge = task.type === "challenge";
   const submitted = !!submission;
   const [open, setOpen] = useState(!submitted);
@@ -108,7 +109,7 @@ export function TaskCard({ task, teamId, submission, onSaved }: Props) {
             </a>
           )}
 
-          <SubmissionForm task={task} teamId={teamId} existing={submission} onSaved={onSaved} />
+          <SubmissionForm task={task} team={team} existing={submission} onSaved={onSaved} />
         </div>
       )}
     </div>
