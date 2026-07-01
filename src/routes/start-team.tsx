@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { createTeam } from "@/lib/hunt.functions";
 import { setStoredTeam } from "@/lib/team";
 
 export const Route = createFileRoute("/start-team")({
@@ -9,6 +10,7 @@ export const Route = createFileRoute("/start-team")({
 
 function StartTeam() {
   const navigate = useNavigate();
+  const create = useServerFn(createTeam);
   const [name, setName] = useState("");
   const [passcode, setPasscode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -22,18 +24,15 @@ function StartTeam() {
       return;
     }
     setBusy(true);
-    const { data, error: dbErr } = await supabase
-      .from("teams")
-      .insert({ name: name.trim(), passcode })
-      .select()
-      .single();
-    setBusy(false);
-    if (dbErr) {
-      setError(dbErr.message);
-      return;
+    try {
+      const t = await create({ data: { name: name.trim(), passcode } });
+      setStoredTeam(t);
+      navigate({ to: "/hunt" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
     }
-    setStoredTeam({ id: data.id, name: data.name });
-    navigate({ to: "/hunt" });
   }
 
   return (
