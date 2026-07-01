@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { clearStoredTeam, getStoredTeam } from "@/lib/team";
 import type { Submission, Task } from "@/lib/types";
 import { TaskCard } from "@/components/TaskCard";
+import { ShagLogo, EventTitle } from "@/components/brand";
 import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
 
 export const Route = createFileRoute("/hunt")({
