@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Submission, Task } from "@/lib/types";
+import { ShagLogo } from "@/components/brand";
 
 export const Route = createFileRoute("/team/$teamId")({
   component: TeamDetail,
