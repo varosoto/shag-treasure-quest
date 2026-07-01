@@ -71,10 +71,8 @@ function Hunt() {
         }}
       >
         <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-gold border border-gold/40 rounded-full px-2.5 py-0.5">
-              🌊 Seaholm District
-            </span>
+          <div className="flex items-center justify-between mb-6">
+            <ShagLogo onDark />
             <div className="flex items-center gap-3 font-mono text-[10px] uppercase text-cream/60">
               <Link to="/leaderboard" className="underline">
                 Leaderboard
@@ -90,9 +88,13 @@ function Hunt() {
               </button>
             </div>
           </div>
-          <h1 className="font-serif text-4xl leading-[0.95]">
-            The <em className="text-gold">Seaholm</em> Scavenger Hunt
-          </h1>
+          <span className="inline-block font-mono text-[10px] uppercase tracking-widest text-gold border border-gold/40 rounded-full px-2.5 py-0.5 mb-4">
+            🌊 Seaholm District
+          </span>
+          <EventTitle size="md" />
+          <p className="text-cream/70 text-[10px] mt-4 font-mono uppercase tracking-[0.2em]">
+            14 Challenges · Where Hair Matters · Austin, TX
+          </p>
           <p className="text-cream/70 text-xs mt-2 font-mono uppercase tracking-wider">
             Team · {team.name}
           </p>
