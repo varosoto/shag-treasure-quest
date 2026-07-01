@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
 import { useRealtimeTeams } from "@/hooks/useRealtimeTeams";
+import { ShagLogo } from "@/components/brand";
 
 export const Route = createFileRoute("/leaderboard")({
   component: Leaderboard,
