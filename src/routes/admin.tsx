@@ -6,6 +6,7 @@ import {
   adminUpdateSubmission,
   adminDeleteSubmission,
   adminResetTeam,
+  adminDeleteTeam,
   adminCreateTeam,
   adminListAll,
 } from "@/lib/admin.functions";
