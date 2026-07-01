@@ -26,7 +26,7 @@ function Hunt() {
     (async () => {
       const [{ data: t }, { data: s }] = await Promise.all([
         supabase.from("tasks").select("*").order("order_num"),
-        supabase.from("submissions").select("*").eq("team_id", team.id),
+        supabase.from("submissions").select("*").eq("team_id", team.id).is("deleted_at", null),
       ]);
       setTasks((t ?? []) as Task[]);
       const map: Record<string, Submission> = {};

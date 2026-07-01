@@ -15,7 +15,7 @@ function Leaderboard() {
   async function load() {
     const [{ data: teams }, { data: subs }] = await Promise.all([
       supabase.from("teams").select("id,name"),
-      supabase.from("submissions").select("team_id,awarded_points"),
+      supabase.from("submissions").select("team_id,awarded_points").is("deleted_at", null),
     ]);
     const map = new Map<string, { points: number; done: number }>();
     (subs ?? []).forEach((s) => {
