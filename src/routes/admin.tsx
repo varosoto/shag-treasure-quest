@@ -447,6 +447,13 @@ function TeamsTab({
       setErr(e instanceof Error ? e.message : "Error");
     }
   }
+  async function doDelete() {
+    if (!deleteTarget) return;
+    await delTeam({ data: { passcode, teamId: deleteTarget.id } });
+    setDeleteTarget(null);
+    setDeleteStage(0);
+    onChange();
+  }
 
   return (
     <div className="space-y-4 mt-4">
@@ -531,6 +538,29 @@ function TeamsTab({
               <Button variant="destructive" onClick={() => setConfirmStage(2)}>Continue</Button>
             ) : (
               <Button variant="destructive" onClick={doReset}>Yes, delete all</Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) { setDeleteTarget(null); setDeleteStage(0); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {deleteStage === 1 ? `Delete ${deleteTarget?.name}?` : `Really delete ${deleteTarget?.name}?`}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-ink/70">
+            {deleteStage === 1
+              ? "This will permanently remove the team and every submission, photo, and point it has earned."
+              : "Final confirmation. The team and all of its data will be permanently deleted."}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setDeleteTarget(null); setDeleteStage(0); }}>Cancel</Button>
+            {deleteStage === 1 ? (
+              <Button variant="destructive" onClick={() => setDeleteStage(2)}>Continue</Button>
+            ) : (
+              <Button variant="destructive" onClick={doDelete}>Yes, delete team</Button>
             )}
           </DialogFooter>
         </DialogContent>
