@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getStoredTeam, setStoredTeam } from "@/lib/team";
 import { useRealtimeTeams } from "@/hooks/useRealtimeTeams";
 import { joinTeam } from "@/lib/hunt.functions";
+import { ShagLogo, EventTitle } from "@/components/brand";
 import {
   Dialog,
   DialogContent,
