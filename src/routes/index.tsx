@@ -31,7 +31,8 @@ function Landing() {
     <div className="min-h-screen bg-cream">
       <div className="bg-ink text-cream px-6 pt-6 pb-20">
         <div className="max-w-md mx-auto">
-          <div className="flex justify-end mb-6">
+          <div className="flex justify-between items-center mb-8">
+            <ShagLogo onDark />
             <Link
               to="/start-team"
               className="font-mono uppercase text-[10px] tracking-widest border border-gold/40 text-gold px-3 py-1.5 rounded-full hover:bg-gold/10"
@@ -42,17 +43,23 @@ function Landing() {
           <div className="inline-block font-mono text-[10px] uppercase tracking-widest text-gold border border-gold/40 rounded-full px-3 py-1 mb-6">
             🌊 Austin, Texas · Seaholm District
           </div>
-          <h1 className="font-serif text-5xl leading-[0.95] mb-3">
-            The <em className="text-gold">Seaholm</em> Scavenger Hunt
-          </h1>
-          <p className="text-cream/70 text-sm leading-relaxed">
-            10 stops · 4 hairstylist challenges · Keep Austin Styled 💇
+          <EventTitle size="lg" />
+          <p className="text-cream/70 text-xs mt-5 font-mono uppercase tracking-[0.2em]">
+            14 Challenges · Where Hair Matters · Austin, TX
           </p>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-6 -mt-10 pb-16">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-ink/50 mb-3">
+        <div className="text-center mb-2">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-ink/50">
+            Presented by
+          </div>
+          <div className="mt-1 flex justify-center">
+            <ShagLogo />
+          </div>
+        </div>
+        <div className="font-mono text-[10px] uppercase tracking-widest text-ink/50 mb-3 mt-6">
           Join a team
         </div>
         {sorted.length === 0 ? (
