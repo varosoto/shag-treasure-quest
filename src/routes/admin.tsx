@@ -408,8 +408,11 @@ function TeamsTab({
 }) {
   const reset = useServerFn(adminResetTeam);
   const create = useServerFn(adminCreateTeam);
+  const delTeam = useServerFn(adminDeleteTeam);
   const [resetTarget, setResetTarget] = useState<TeamRow | null>(null);
   const [confirmStage, setConfirmStage] = useState(0);
+  const [deleteTarget, setDeleteTarget] = useState<TeamRow | null>(null);
+  const [deleteStage, setDeleteStage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
   const [teamPass, setTeamPass] = useState("");
@@ -492,13 +495,17 @@ function TeamsTab({
               <div className="mt-1 font-mono text-[10px] text-ink/40">
                 Last: {s.last ? new Date(s.last).toLocaleString() : "—"}
               </div>
-              <div className="flex gap-2 mt-4">
+              <div className="flex flex-wrap gap-2 mt-4">
                 <Button asChild variant="outline" size="sm">
                   <Link to="/team/$teamId" params={{ teamId: t.id }}>View</Link>
                 </Button>
                 <Button variant="ghost" size="sm" className="text-rust hover:text-rust"
                   onClick={() => { setResetTarget(t); setConfirmStage(1); }}>
                   Reset progress
+                </Button>
+                <Button variant="ghost" size="sm" className="text-rust hover:text-rust"
+                  onClick={() => { setDeleteTarget(t); setDeleteStage(1); }}>
+                  <Trash2 className="mr-1 h-4 w-4" /> Delete team
                 </Button>
               </div>
             </div>
