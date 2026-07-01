@@ -50,6 +50,7 @@ export type Database = {
         Row: {
           awarded_points: number | null
           bonus_claimed: boolean | null
+          deleted_at: string | null
           id: string
           notes: string | null
           photo_url: string | null
@@ -60,6 +61,7 @@ export type Database = {
         Insert: {
           awarded_points?: number | null
           bonus_claimed?: boolean | null
+          deleted_at?: string | null
           id?: string
           notes?: string | null
           photo_url?: string | null
@@ -70,6 +72,7 @@ export type Database = {
         Update: {
           awarded_points?: number | null
           bonus_claimed?: boolean | null
+          deleted_at?: string | null
           id?: string
           notes?: string | null
           photo_url?: string | null
