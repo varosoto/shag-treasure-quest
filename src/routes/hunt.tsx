@@ -125,7 +125,7 @@ function Hunt() {
           <TaskCard
             key={task.id}
             task={task}
-            teamId={team.id}
+            team={team}
             submission={subs[task.id] ?? null}
             onSaved={handleSaved}
           />
