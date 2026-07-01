@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { BrandFooter } from "@/components/brand";
 
 function NotFoundComponent() {
   return (
