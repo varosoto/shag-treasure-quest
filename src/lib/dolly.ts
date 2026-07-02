@@ -1,9 +1,28 @@
 export const dollyLines = [
-  { before: "Tumble outta bed and I stumble to the kitchen,", answer: "pour myself a cup of ambition", display: "Pour myself a cup of ambition", placeholder: "fill in the next line..." },
-  { before: "It's a rich man's game, no matter what they call it,", answer: "and you spend your life puttin' money in his wallet", display: "And you spend your life puttin' money in his wallet", placeholder: "what do you spend your life doing?" },
-  { before: "They let you dream just to watch 'em shatter,", answer: "you're just a step on the boss man's ladder", display: "You're just a step on the boss man's ladder", placeholder: "what are you on the boss man's..." },
-  { before: "9 to 5, what a way to make a living,", answer: "barely gettin' by, it's all takin' and no givin'", display: "Barely gettin' by, it's all takin' and no givin'", placeholder: "barely gettin' by..." },
-  { before: "They just use your mind and they never give you credit,", answer: "it's enough to drive you crazy if you let it", display: "It's enough to drive you crazy if you let it", placeholder: "it's enough to drive you..." },
+  {
+    before: "Tumble out of bed and I stumble to the kitchen,",
+    answer: "pour myself a cup of ambition",
+    display: "Pour myself a cup of ambition",
+    placeholder: "fill in the next line...",
+  },
+  {
+    before: "Jump in the shower and the blood starts pumpin',",
+    answer: "out on the street, the traffic starts jumpin'",
+    display: "Out on the street, the traffic starts jumpin'",
+    placeholder: "out on the street...",
+  },
+  {
+    before: "They just use your mind and they never give you credit,",
+    answer: "it's enough to drive you crazy if you let it",
+    display: "It's enough to drive you crazy if you let it",
+    placeholder: "it's enough to drive you...",
+  },
+  {
+    before: "9 to 5, for service and devotion,",
+    answer: "you would think that i would deserve a fair promotion",
+    display: "You would think that I would deserve a fair promotion",
+    placeholder: "you would think that...",
+  },
 ];
 
 function norm(s: string) {
