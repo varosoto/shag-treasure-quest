@@ -492,11 +492,8 @@ function TeamsTab({
           return (
             <div key={t.id} className="bg-white border border-ink/10 rounded-2xl p-5">
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="font-serif text-xl">{t.name}</h3>
-                  <p className="font-mono text-[10px] uppercase text-ink/40 mt-1">
-                    Passcode {t.passcode}
-                  </p>
+                <div className="flex-1 min-w-0">
+                  <EditableTeamName team={t} onRename={doRename} />
                 </div>
                 <div className="text-right">
                   <div className="font-serif text-2xl text-teal">{s.points}</div>
