@@ -1,0 +1,1 @@
+ALTER TABLE public.teams ALTER COLUMN passcode DROP NOT NULL;

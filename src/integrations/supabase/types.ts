@@ -150,19 +150,19 @@ export type Database = {
           created_at: string | null
           id: string
           name: string
-          passcode: string
+          passcode: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           name: string
-          passcode: string
+          passcode?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           name?: string
-          passcode?: string
+          passcode?: string | null
         }
         Relationships: []
       }
