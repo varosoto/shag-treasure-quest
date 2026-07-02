@@ -3,65 +3,53 @@ import { z } from "zod";
 import { dollyLines, scoreLine } from "@/lib/dolly";
 
 const BUCKET = "submission-photos";
-const PASSCODE_RE = /^\d{4}$/;
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   return supabaseAdmin;
 }
 
-async function verifyTeam(teamId: string, passcode: string) {
+async function verifyTeam(teamId: string) {
   const sb = await admin();
   const { data, error } = await sb
     .from("teams")
-    .select("id,name,passcode")
+    .select("id,name")
     .eq("id", teamId)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!data || data.passcode !== passcode) throw new Error("Invalid team credentials");
+  if (!data) throw new Error("Unknown team");
   return { id: data.id, name: data.name };
 }
 
 export const createTeam = createServerFn({ method: "POST" })
   .inputValidator((data) =>
-    z
-      .object({
-        name: z.string().trim().min(1).max(50),
-        passcode: z.string().regex(PASSCODE_RE),
-      })
-      .parse(data),
+    z.object({ name: z.string().trim().min(1).max(50) }).parse(data),
   )
   .handler(async ({ data }) => {
     const sb = await admin();
     const { data: row, error } = await sb
       .from("teams")
-      .insert({ name: data.name, passcode: data.passcode })
+      .insert({ name: data.name })
       .select("id,name")
       .single();
     if (error) throw new Error(error.message);
-    return { id: row.id, name: row.name, passcode: data.passcode };
+    return { id: row.id, name: row.name };
   });
 
 export const joinTeam = createServerFn({ method: "POST" })
   .inputValidator((data) =>
-    z
-      .object({
-        name: z.string().trim().min(1).max(50),
-        passcode: z.string().regex(PASSCODE_RE),
-      })
-      .parse(data),
+    z.object({ name: z.string().trim().min(1).max(50) }).parse(data),
   )
   .handler(async ({ data }) => {
     const sb = await admin();
     const { data: row, error } = await sb
       .from("teams")
-      .select("id,name,passcode")
+      .select("id,name")
       .eq("name", data.name)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!row) throw new Error("Team not found");
-    if (row.passcode !== data.passcode) throw new Error("Wrong passcode");
-    return { id: row.id, name: row.name, passcode: data.passcode };
+    return { id: row.id, name: row.name };
   });
 
 export const requestPhotoUpload = createServerFn({ method: "POST" })
@@ -69,14 +57,13 @@ export const requestPhotoUpload = createServerFn({ method: "POST" })
     z
       .object({
         teamId: z.string().uuid(),
-        passcode: z.string().regex(PASSCODE_RE),
         taskId: z.string().min(1).max(80),
         ext: z.string().regex(/^[a-zA-Z0-9]{1,8}$/),
       })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    await verifyTeam(data.teamId, data.passcode);
+    await verifyTeam(data.teamId);
     const sb = await admin();
     const path = `${data.teamId}/${data.taskId}-${Date.now()}.${data.ext}`;
     const { data: signed, error } = await sb.storage
@@ -92,7 +79,6 @@ export const saveSubmission = createServerFn({ method: "POST" })
     z
       .object({
         teamId: z.string().uuid(),
-        passcode: z.string().regex(PASSCODE_RE),
         taskId: z.string().min(1).max(80),
         photoUrl: z.string().url().nullable().optional(),
         notes: z.string().max(4000).nullable().optional(),
@@ -101,7 +87,7 @@ export const saveSubmission = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    await verifyTeam(data.teamId, data.passcode);
+    await verifyTeam(data.teamId);
     const sb = await admin();
     const { data: task, error: taskErr } = await sb
       .from("tasks")
@@ -136,14 +122,13 @@ export const saveDolly = createServerFn({ method: "POST" })
     z
       .object({
         teamId: z.string().uuid(),
-        passcode: z.string().regex(PASSCODE_RE),
         taskId: z.string().min(1).max(80),
         answers: z.array(z.string().max(500)).length(dollyLines.length),
       })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    await verifyTeam(data.teamId, data.passcode);
+    await verifyTeam(data.teamId);
     const sb = await admin();
     const results = data.answers.map((a, i) => scoreLine(a, dollyLines[i].answer));
     const correct = results.filter(Boolean).length;
