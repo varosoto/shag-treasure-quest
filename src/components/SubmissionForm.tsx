@@ -192,7 +192,6 @@ function DollyForm({ task, team, existing, onSaved }: Props) {
       const res = await save({
         data: {
           teamId: team.id,
-          passcode: team.passcode,
           taskId: task.id,
           answers,
         },
