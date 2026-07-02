@@ -123,7 +123,18 @@ function Hunt() {
       </div>
 
       <main className="max-w-md mx-auto px-5 py-6 space-y-4">
+        <div className="rounded-r-lg border-l-4 border-gold bg-cream p-4">
+          <div className="font-mono text-xs uppercase tracking-widest text-rust mb-2">
+            The Only Two Rules
+          </div>
+          <ol className="text-sm text-ink/80 leading-relaxed list-decimal pl-5 space-y-1">
+            <li>No AI-generated images. Real photos only.</li>
+            <li>Every photo needs at least 2 team members in frame — take a selfie or ask a stranger. Solo photos don't count.</li>
+          </ol>
+        </div>
+
         <div className="rounded-2xl bg-white border border-ink/10 p-4 text-sm text-ink/80 leading-relaxed">
+
           Welcome to Seaholm — Austin's old power plant district turned modern playground. Work
           through all 10 stops and 4 hair dares. Submit a photo + a short story at each task.
         </div>
