@@ -183,17 +183,47 @@ function DollyForm({ task, team, existing, onSaved }: Props) {
   const [busy, setBusy] = useState(false);
   const [submitted, setSubmitted] = useState(!!existing);
   const [error, setError] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [bonus, setBonus] = useState(existing?.bonus_claimed ?? false);
   const save = useServerFn(saveDolly);
+  const reqUpload = useServerFn(requestPhotoUpload);
+
+  const preview = useMemo(() => {
+    if (file) return URL.createObjectURL(file);
+    return existing?.photo_url ?? null;
+  }, [file, existing?.photo_url]);
+
+  useEffect(() => {
+    if (file && preview?.startsWith("blob:")) {
+      return () => URL.revokeObjectURL(preview);
+    }
+  }, [file, preview]);
 
   async function submit() {
     setBusy(true);
     setError(null);
     try {
+      let photoUrl = existing?.photo_url ?? null;
+      if (file) {
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const req = await reqUpload({
+          data: { teamId: team.id, taskId: task.id, ext: ext || "jpg" },
+        });
+        const upRes = await fetch(req.signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "application/octet-stream" },
+          body: file,
+        });
+        if (!upRes.ok) throw new Error(`Upload failed (${upRes.status})`);
+        photoUrl = req.publicUrl;
+      }
       const res = await save({
         data: {
           teamId: team.id,
           taskId: task.id,
           answers,
+          photoUrl,
+          bonusClaimed: bonus,
         },
       });
       setResults(res.results);
@@ -235,6 +265,41 @@ function DollyForm({ task, team, existing, onSaved }: Props) {
           </div>
         );
       })}
+
+      {!submitted && (
+        <>
+          <div>
+            <label className="block font-mono text-xs uppercase tracking-wide text-ink/70 mb-1.5">
+              Bonus Photo / Video (optional)
+            </label>
+            <input
+              type="file"
+              accept="image/*,video/*"
+              capture="environment"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-ink file:px-3 file:py-2 file:text-cream file:font-mono file:text-xs file:uppercase"
+            />
+            {preview && (
+              <img src={preview} alt="" className="mt-2 h-32 w-full rounded-lg object-cover" />
+            )}
+          </div>
+          {task.bonus_description && (
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={bonus}
+                onChange={(e) => setBonus(e.target.checked)}
+                className="mt-1"
+              />
+              <span>
+                <strong className="text-gold">+{task.max_bonus_points} bonus:</strong>{" "}
+                {task.bonus_description}
+              </span>
+            </label>
+          )}
+        </>
+      )}
+
       {error && <div className="text-sm text-rust">{error}</div>}
       {!submitted && (
         <button
@@ -254,3 +319,4 @@ function DollyForm({ task, team, existing, onSaved }: Props) {
     </div>
   );
 }
+
