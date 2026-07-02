@@ -627,3 +627,78 @@ function timeAgo(iso: string) {
   if (h < 24) return `${h}h ago`;
   return `${Math.floor(h / 24)}d ago`;
 }
+
+function EditableTeamName({
+  team,
+  onRename,
+}: {
+  team: TeamRow;
+  onRename: (teamId: string, newName: string) => Promise<void>;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(team.name);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    setValue(team.name);
+  }, [team.name]);
+
+  async function commit() {
+    const next = value.trim();
+    if (!next || next === team.name) {
+      setEditing(false);
+      setValue(team.name);
+      setErr(null);
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    try {
+      await onRename(team.id, next);
+      setEditing(false);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!editing) {
+    return (
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        className="font-serif text-xl text-left hover:underline decoration-dotted underline-offset-4"
+        title="Click to rename"
+      >
+        {team.name}
+      </button>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      <Input
+        autoFocus
+        value={value}
+        disabled={busy}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            (e.target as HTMLInputElement).blur();
+          } else if (e.key === "Escape") {
+            setValue(team.name);
+            setEditing(false);
+            setErr(null);
+          }
+        }}
+        className="h-9 font-serif text-lg"
+        maxLength={50}
+      />
+      {err && <p className="text-xs text-rust">{err}</p>}
+    </div>
+  );
+}
