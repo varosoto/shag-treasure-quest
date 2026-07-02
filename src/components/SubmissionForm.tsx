@@ -74,7 +74,6 @@ export function SubmissionForm({ task, team, existing, onSaved }: Props) {
         const req = await reqUpload({
           data: {
             teamId: team.id,
-            passcode: team.passcode,
             taskId: task.id,
             ext: ext || "jpg",
           },
@@ -90,7 +89,6 @@ export function SubmissionForm({ task, team, existing, onSaved }: Props) {
       const row = await save({
         data: {
           teamId: team.id,
-          passcode: team.passcode,
           taskId: task.id,
           photoUrl,
           notes,
@@ -194,7 +192,6 @@ function DollyForm({ task, team, existing, onSaved }: Props) {
       const res = await save({
         data: {
           teamId: team.id,
-          passcode: team.passcode,
           taskId: task.id,
           answers,
         },

@@ -8,6 +8,7 @@ import {
   adminResetTeam,
   adminDeleteTeam,
   adminCreateTeam,
+  adminRenameTeam,
   adminListAll,
 } from "@/lib/admin.functions";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -47,7 +48,7 @@ export const Route = createFileRoute("/admin")({ component: AdminPage });
 const ADMIN_KEY = "seaholm.admin";
 const PASS_KEY = "seaholm.admin.pass";
 
-type TeamRow = { id: string; name: string; passcode: string; created_at: string };
+type TeamRow = { id: string; name: string; passcode: string | null; created_at: string };
 type TaskRow = {
   id: string;
   title: string;
@@ -413,13 +414,13 @@ function TeamsTab({
   const reset = useServerFn(adminResetTeam);
   const create = useServerFn(adminCreateTeam);
   const delTeam = useServerFn(adminDeleteTeam);
+  const rename = useServerFn(adminRenameTeam);
   const [resetTarget, setResetTarget] = useState<TeamRow | null>(null);
   const [confirmStage, setConfirmStage] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<TeamRow | null>(null);
   const [deleteStage, setDeleteStage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
-  const [teamPass, setTeamPass] = useState("");
   const [err, setErr] = useState<string | null>(null);
 
   const stats = useMemo(() => {
@@ -444,8 +445,8 @@ function TeamsTab({
   async function doCreate() {
     setErr(null);
     try {
-      await create({ data: { passcode, name, teamPasscode: teamPass } });
-      setName(""); setTeamPass(""); setCreateOpen(false);
+      await create({ data: { passcode, name } });
+      setName(""); setCreateOpen(false);
       onChange();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Error");
@@ -456,6 +457,10 @@ function TeamsTab({
     await delTeam({ data: { passcode, teamId: deleteTarget.id } });
     setDeleteTarget(null);
     setDeleteStage(0);
+    onChange();
+  }
+  async function doRename(teamId: string, newName: string) {
+    await rename({ data: { passcode, teamId, name: newName } });
     onChange();
   }
 
@@ -471,13 +476,11 @@ function TeamsTab({
             <DialogHeader><DialogTitle>Create team manually</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <Input placeholder="Team name" value={name} onChange={(e) => setName(e.target.value)} />
-              <Input placeholder="4-digit passcode" maxLength={4} value={teamPass}
-                onChange={(e) => setTeamPass(e.target.value.replace(/\D/g, ""))} />
               {err && <p className="text-sm text-rust">{err}</p>}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button onClick={doCreate} disabled={!name || teamPass.length !== 4} className="bg-teal hover:bg-teal/90">Create</Button>
+              <Button onClick={doCreate} disabled={!name.trim()} className="bg-teal hover:bg-teal/90">Create</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -489,11 +492,8 @@ function TeamsTab({
           return (
             <div key={t.id} className="bg-white border border-ink/10 rounded-2xl p-5">
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="font-serif text-xl">{t.name}</h3>
-                  <p className="font-mono text-[10px] uppercase text-ink/40 mt-1">
-                    Passcode {t.passcode}
-                  </p>
+                <div className="flex-1 min-w-0">
+                  <EditableTeamName team={t} onRename={doRename} />
                 </div>
                 <div className="text-right">
                   <div className="font-serif text-2xl text-teal">{s.points}</div>
@@ -626,4 +626,79 @@ function timeAgo(iso: string) {
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h ago`;
   return `${Math.floor(h / 24)}d ago`;
+}
+
+function EditableTeamName({
+  team,
+  onRename,
+}: {
+  team: TeamRow;
+  onRename: (teamId: string, newName: string) => Promise<void>;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(team.name);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    setValue(team.name);
+  }, [team.name]);
+
+  async function commit() {
+    const next = value.trim();
+    if (!next || next === team.name) {
+      setEditing(false);
+      setValue(team.name);
+      setErr(null);
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    try {
+      await onRename(team.id, next);
+      setEditing(false);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!editing) {
+    return (
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        className="font-serif text-xl text-left hover:underline decoration-dotted underline-offset-4"
+        title="Click to rename"
+      >
+        {team.name}
+      </button>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      <Input
+        autoFocus
+        value={value}
+        disabled={busy}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            (e.target as HTMLInputElement).blur();
+          } else if (e.key === "Escape") {
+            setValue(team.name);
+            setEditing(false);
+            setErr(null);
+          }
+        }}
+        className="h-9 font-serif text-lg"
+        maxLength={50}
+      />
+      {err && <p className="text-xs text-rust">{err}</p>}
+    </div>
+  );
 }
