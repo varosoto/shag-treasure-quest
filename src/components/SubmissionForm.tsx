@@ -89,7 +89,6 @@ export function SubmissionForm({ task, team, existing, onSaved }: Props) {
       const row = await save({
         data: {
           teamId: team.id,
-          passcode: team.passcode,
           taskId: task.id,
           photoUrl,
           notes,
