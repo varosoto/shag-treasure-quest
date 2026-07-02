@@ -48,7 +48,7 @@ export const Route = createFileRoute("/admin")({ component: AdminPage });
 const ADMIN_KEY = "seaholm.admin";
 const PASS_KEY = "seaholm.admin.pass";
 
-type TeamRow = { id: string; name: string; passcode: string; created_at: string };
+type TeamRow = { id: string; name: string; passcode: string | null; created_at: string };
 type TaskRow = {
   id: string;
   title: string;
