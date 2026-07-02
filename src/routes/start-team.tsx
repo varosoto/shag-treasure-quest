@@ -13,20 +13,15 @@ function StartTeam() {
   const navigate = useNavigate();
   const create = useServerFn(createTeam);
   const [name, setName] = useState("");
-  const [passcode, setPasscode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!/^\d{4}$/.test(passcode)) {
-      setError("Passcode must be 4 digits.");
-      return;
-    }
     setBusy(true);
     try {
-      const t = await create({ data: { name: name.trim(), passcode } });
+      const t = await create({ data: { name: name.trim() } });
       setStoredTeam(t);
       navigate({ to: "/hunt" });
     } catch (err) {
@@ -37,7 +32,7 @@ function StartTeam() {
   }
 
   return (
-    <FormShell title="Start a new team" subtitle="Pick a team name and a 4-digit passcode.">
+    <FormShell title="Start a new team" subtitle="Pick a team name to get started.">
       <form onSubmit={submit} className="space-y-4">
         <Field label="Team name">
           <input
@@ -48,19 +43,10 @@ function StartTeam() {
             className="w-full rounded-lg border border-ink/20 bg-white p-3"
           />
         </Field>
-        <Field label="4-digit passcode">
-          <input
-            value={passcode}
-            onChange={(e) => setPasscode(e.target.value.replace(/\D/g, "").slice(0, 4))}
-            inputMode="numeric"
-            required
-            className="w-full rounded-lg border border-ink/20 bg-white p-3 font-mono text-2xl tracking-[0.5em] text-center"
-          />
-        </Field>
         {error && <div className="text-sm text-rust">{error}</div>}
         <button
           type="submit"
-          disabled={busy}
+          disabled={busy || !name.trim()}
           className="w-full rounded-xl bg-teal text-white font-mono uppercase text-xs tracking-widest py-4 disabled:opacity-50"
         >
           {busy ? "Creating…" : "Create team"}
