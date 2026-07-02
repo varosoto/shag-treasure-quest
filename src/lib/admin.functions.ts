@@ -103,7 +103,6 @@ export const adminCreateTeam = createServerFn({ method: "POST" })
       .object({
         passcode: z.string().min(1).max(100),
         name: z.string().trim().min(1).max(50),
-        teamPasscode: z.string().regex(PASSCODE_RE),
       })
       .parse(data),
   )
@@ -112,7 +111,30 @@ export const adminCreateTeam = createServerFn({ method: "POST" })
     const sb = await admin();
     const { data: row, error } = await sb
       .from("teams")
-      .insert({ name: data.name, passcode: data.teamPasscode })
+      .insert({ name: data.name })
+      .select("id,name")
+      .single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const adminRenameTeam = createServerFn({ method: "POST" })
+  .inputValidator((data) =>
+    z
+      .object({
+        passcode: z.string().min(1).max(100),
+        teamId: z.string().uuid(),
+        name: z.string().trim().min(1).max(50),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    verify(data.passcode);
+    const sb = await admin();
+    const { data: row, error } = await sb
+      .from("teams")
+      .update({ name: data.name })
+      .eq("id", data.teamId)
       .select("id,name")
       .single();
     if (error) throw new Error(error.message);
