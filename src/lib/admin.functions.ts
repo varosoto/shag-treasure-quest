@@ -2,8 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const DEFAULT_PASSCODE = "seaholm2026";
-const PASSCODE_RE = /^\d{4}$/;
-void PASSCODE_RE;
 
 function expectedPasscode() {
   return process.env.ADMIN_PASSCODE || DEFAULT_PASSCODE;
