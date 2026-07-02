@@ -74,7 +74,6 @@ export function SubmissionForm({ task, team, existing, onSaved }: Props) {
         const req = await reqUpload({
           data: {
             teamId: team.id,
-            passcode: team.passcode,
             taskId: task.id,
             ext: ext || "jpg",
           },
