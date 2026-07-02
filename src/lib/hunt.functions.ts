@@ -124,6 +124,8 @@ export const saveDolly = createServerFn({ method: "POST" })
         teamId: z.string().uuid(),
         taskId: z.string().min(1).max(80),
         answers: z.array(z.string().max(500)).length(dollyLines.length),
+        photoUrl: z.string().url().nullable().optional(),
+        bonusClaimed: z.boolean().optional(),
       })
       .parse(data),
   )
@@ -132,7 +134,14 @@ export const saveDolly = createServerFn({ method: "POST" })
     const sb = await admin();
     const results = data.answers.map((a, i) => scoreLine(a, dollyLines[i].answer));
     const correct = results.filter(Boolean).length;
-    const awarded = Math.round((correct / dollyLines.length) * 100);
+    const base = Math.round((correct / dollyLines.length) * 100);
+    const { data: task } = await sb
+      .from("tasks")
+      .select("max_bonus_points")
+      .eq("id", data.taskId)
+      .maybeSingle();
+    const bonus = data.bonusClaimed ? task?.max_bonus_points ?? 0 : 0;
+    const awarded = base + bonus;
     const { data: sub, error } = await sb
       .from("submissions")
       .upsert(
@@ -141,7 +150,8 @@ export const saveDolly = createServerFn({ method: "POST" })
           task_id: data.taskId,
           notes: `Dolly score: ${correct}/${dollyLines.length}`,
           awarded_points: awarded,
-          bonus_claimed: false,
+          bonus_claimed: !!data.bonusClaimed,
+          photo_url: data.photoUrl ?? null,
         },
         { onConflict: "team_id,task_id" },
       )
@@ -159,3 +169,4 @@ export const saveDolly = createServerFn({ method: "POST" })
     );
     return { submission: sub, results, correct };
   });
+

@@ -299,6 +299,16 @@ function SubmissionsTab({
 
   return (
     <div className="space-y-4 mt-4">
+      <div className="rounded-r-lg border-l-4 border-gold bg-cream p-4">
+        <div className="font-mono text-xs uppercase tracking-widest text-rust mb-2">
+          The Only Two Rules
+        </div>
+        <ol className="text-sm text-ink/80 leading-relaxed list-decimal pl-5 space-y-1">
+          <li>No AI-generated images. Real photos only.</li>
+          <li>Every photo needs at least 2 team members in frame — take a selfie or ask a stranger. Solo photos don't count.</li>
+        </ol>
+      </div>
+
       <div className="flex flex-wrap items-end gap-3 bg-white border border-ink/10 rounded-xl p-4">
         <FilterSelect label="Team" value={teamFilter} onChange={setTeamFilter}
           options={[{ v: "all", l: "All teams" }, ...teams.map((t) => ({ v: t.id, l: t.name }))]} />
