@@ -476,13 +476,11 @@ function TeamsTab({
             <DialogHeader><DialogTitle>Create team manually</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <Input placeholder="Team name" value={name} onChange={(e) => setName(e.target.value)} />
-              <Input placeholder="4-digit passcode" maxLength={4} value={teamPass}
-                onChange={(e) => setTeamPass(e.target.value.replace(/\D/g, ""))} />
               {err && <p className="text-sm text-rust">{err}</p>}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button onClick={doCreate} disabled={!name || teamPass.length !== 4} className="bg-teal hover:bg-teal/90">Create</Button>
+              <Button onClick={doCreate} disabled={!name.trim()} className="bg-teal hover:bg-teal/90">Create</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
