@@ -414,13 +414,13 @@ function TeamsTab({
   const reset = useServerFn(adminResetTeam);
   const create = useServerFn(adminCreateTeam);
   const delTeam = useServerFn(adminDeleteTeam);
+  const rename = useServerFn(adminRenameTeam);
   const [resetTarget, setResetTarget] = useState<TeamRow | null>(null);
   const [confirmStage, setConfirmStage] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<TeamRow | null>(null);
   const [deleteStage, setDeleteStage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
-  const [teamPass, setTeamPass] = useState("");
   const [err, setErr] = useState<string | null>(null);
 
   const stats = useMemo(() => {
@@ -445,8 +445,8 @@ function TeamsTab({
   async function doCreate() {
     setErr(null);
     try {
-      await create({ data: { passcode, name, teamPasscode: teamPass } });
-      setName(""); setTeamPass(""); setCreateOpen(false);
+      await create({ data: { passcode, name } });
+      setName(""); setCreateOpen(false);
       onChange();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Error");
@@ -457,6 +457,10 @@ function TeamsTab({
     await delTeam({ data: { passcode, teamId: deleteTarget.id } });
     setDeleteTarget(null);
     setDeleteStage(0);
+    onChange();
+  }
+  async function doRename(teamId: string, newName: string) {
+    await rename({ data: { passcode, teamId, name: newName } });
     onChange();
   }
 
