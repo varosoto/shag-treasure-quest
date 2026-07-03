@@ -147,7 +147,7 @@ export const adminListAll = createServerFn({ method: "POST" })
     const sb = await admin();
     const [teamsRes, tasksRes, subsRes] = await Promise.all([
       sb.from("teams").select("id,name,passcode,created_at").order("created_at"),
-      sb.from("tasks").select("id,title,type,order_num,base_points,max_bonus_points").order("order_num"),
+      sb.from("tasks").select("id,title,type,order_num,base_points,max_bonus_points,hidden").order("order_num"),
       sb
         .from("submissions")
         .select("*")
@@ -162,4 +162,22 @@ export const adminListAll = createServerFn({ method: "POST" })
       tasks: tasksRes.data ?? [],
       submissions: subsRes.data ?? [],
     };
+  });
+
+export const adminSetTaskHidden = createServerFn({ method: "POST" })
+  .inputValidator((data) =>
+    z
+      .object({
+        passcode: z.string().min(1).max(100),
+        taskId: z.string().min(1).max(100),
+        hidden: z.boolean(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    verify(data.passcode);
+    const sb = await admin();
+    const { error } = await sb.from("tasks").update({ hidden: data.hidden }).eq("id", data.taskId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
