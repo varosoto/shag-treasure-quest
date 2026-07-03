@@ -320,7 +320,7 @@ function SubmissionsTab({
         <FilterSelect label="Team" value={teamFilter} onChange={setTeamFilter}
           options={[{ v: "all", l: "All teams" }, ...teams.map((t) => ({ v: t.id, l: t.name }))]} />
         <FilterSelect label="Task" value={taskFilter} onChange={setTaskFilter}
-          options={[{ v: "all", l: "All tasks" }, ...tasks.map((t) => ({ v: t.id, l: t.title }))]} />
+          options={[{ v: "all", l: "All tasks" }, ...tasks.map((t) => ({ v: t.id, l: t.hidden ? `${t.title} (hidden)` : t.title }))]} />
         <FilterSelect label="Bonus" value={bonusFilter} onChange={setBonusFilter}
           options={[{ v: "all", l: "All" }, { v: "yes", l: "Yes" }, { v: "no", l: "No" }]} />
         <div className="ml-auto font-mono text-xs text-ink/50">{filtered.length} shown</div>
