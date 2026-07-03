@@ -194,6 +194,7 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
               <TabsTrigger value="submissions">Submissions</TabsTrigger>
               <TabsTrigger value="teams">Teams</TabsTrigger>
               <TabsTrigger value="tasks">Tasks</TabsTrigger>
+              <TabsTrigger value="export">Export Photos</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
             </TabsList>
             <TabsContent value="submissions">
@@ -219,10 +220,14 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
             <TabsContent value="tasks">
               <TasksTab passcode={passcode} tasks={tasks} onChange={refresh} />
             </TabsContent>
+            <TabsContent value="export">
+              <ExportPhotosTab teams={teams} tasks={tasks} subs={subs} />
+            </TabsContent>
             <TabsContent value="activity">
               <ActivityTab passcode={passcode} teamMap={teamMap} taskMap={taskMap} />
             </TabsContent>
           </Tabs>
+
         )}
       </main>
     </div>
