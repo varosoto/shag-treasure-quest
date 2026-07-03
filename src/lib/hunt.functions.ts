@@ -21,20 +21,28 @@ async function verifyTeam(teamId: string) {
   return { id: data.id, name: data.name };
 }
 
+const TEAM_PALETTE = [
+  "#7a2e3e", "#d4a847", "#1a6b72", "#c1440e", "#4a6741",
+  "#8b4a6b", "#2f5f8f", "#c96f4a", "#4a8b8b", "#8b7355",
+];
+
 export const createTeam = createServerFn({ method: "POST" })
   .inputValidator((data) =>
     z.object({ name: z.string().trim().min(1).max(50) }).parse(data),
   )
   .handler(async ({ data }) => {
     const sb = await admin();
+    const { count } = await sb.from("teams").select("id", { count: "exact", head: true });
+    const color = TEAM_PALETTE[(count ?? 0) % TEAM_PALETTE.length];
     const { data: row, error } = await sb
       .from("teams")
-      .insert({ name: data.name })
+      .insert({ name: data.name, color })
       .select("id,name")
       .single();
     if (error) throw new Error(error.message);
     return { id: row.id, name: row.name };
   });
+
 
 export const joinTeam = createServerFn({ method: "POST" })
   .inputValidator((data) =>
