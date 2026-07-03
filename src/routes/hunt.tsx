@@ -98,7 +98,7 @@ function Hunt() {
           </span>
           <EventTitle size="md" />
           <p className="text-cream/70 text-[10px] mt-4 font-mono uppercase tracking-[0.2em]">
-            14 Challenges · Where Hair Matters · Austin, TX
+            {total} Challenges · Where Hair Matters · Austin, TX
           </p>
           <p className="text-cream/70 text-xs mt-2 font-mono uppercase tracking-wider">
             Team · {team.name}
