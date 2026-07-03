@@ -443,10 +443,12 @@ function TeamsTab({
   const create = useServerFn(adminCreateTeam);
   const delTeam = useServerFn(adminDeleteTeam);
   const rename = useServerFn(adminRenameTeam);
+  const updateColor = useServerFn(adminUpdateTeamColor);
   const [resetTarget, setResetTarget] = useState<TeamRow | null>(null);
   const [confirmStage, setConfirmStage] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<TeamRow | null>(null);
   const [deleteStage, setDeleteStage] = useState(0);
+
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -491,6 +493,11 @@ function TeamsTab({
     await rename({ data: { passcode, teamId, name: newName } });
     onChange();
   }
+  async function doSetColor(teamId: string, color: string) {
+    await updateColor({ data: { passcode, teamId, color } });
+    onChange();
+  }
+
 
   return (
     <div className="space-y-4 mt-4">
