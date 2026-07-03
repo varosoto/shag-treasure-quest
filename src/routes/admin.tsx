@@ -813,3 +813,60 @@ function EditableTeamName({
     </div>
   );
 }
+
+const TEAM_PALETTE = [
+  "#7a2e3e", "#d4a847", "#1a6b72", "#c1440e", "#4a6741",
+  "#8b4a6b", "#2f5f8f", "#c96f4a", "#4a8b8b", "#8b7355",
+];
+
+function TeamColorSwatch({
+  color,
+  onChange,
+}: {
+  color: string | null;
+  onChange: (c: string) => void | Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(color ?? "#7a2e3e");
+  useEffect(() => {
+    setValue(color ?? "#7a2e3e");
+  }, [color]);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label="Team color"
+          className="h-8 w-8 rounded-full border-2 border-ink/20 shadow-sm shrink-0 cursor-pointer"
+          style={{ background: color ?? "#7a2e3e" }}
+        />
+      </PopoverTrigger>
+      <PopoverContent className="w-56 space-y-3">
+        <div className="font-mono text-[10px] uppercase tracking-widest text-ink/50">Team color</div>
+        <div className="grid grid-cols-5 gap-2">
+          {TEAM_PALETTE.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => { setValue(c); onChange(c); }}
+              className={`h-7 w-7 rounded-full border-2 ${c === value ? "border-ink" : "border-ink/10"}`}
+              style={{ background: c }}
+              aria-label={c}
+            />
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onBlur={(e) => { if (e.target.value !== color) onChange(e.target.value); }}
+            className="h-8 w-12 rounded border border-ink/10 cursor-pointer bg-transparent"
+          />
+          <code className="font-mono text-xs text-ink/70">{value}</code>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
