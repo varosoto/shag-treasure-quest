@@ -188,6 +188,7 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
             <TabsList className="bg-mist">
               <TabsTrigger value="submissions">Submissions</TabsTrigger>
               <TabsTrigger value="teams">Teams</TabsTrigger>
+              <TabsTrigger value="tasks">Tasks</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
             </TabsList>
             <TabsContent value="submissions">
@@ -205,9 +206,13 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
               <TeamsTab
                 passcode={passcode}
                 teams={teams}
+                tasks={tasks}
                 subs={subs}
                 onChange={refresh}
               />
+            </TabsContent>
+            <TabsContent value="tasks">
+              <TasksTab passcode={passcode} tasks={tasks} onChange={refresh} />
             </TabsContent>
             <TabsContent value="activity">
               <ActivityTab passcode={passcode} teamMap={teamMap} taskMap={taskMap} />
