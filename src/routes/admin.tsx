@@ -9,6 +9,7 @@ import {
   adminDeleteTeam,
   adminCreateTeam,
   adminRenameTeam,
+  adminSetTaskHidden,
   adminListAll,
 } from "@/lib/admin.functions";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
