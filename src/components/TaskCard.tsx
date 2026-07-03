@@ -44,7 +44,7 @@ export function TaskCard({ task, team, submission, displayNum, onSaved }: Props)
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center gap-3 p-4 text-left"
       >
-        <span className="font-mono text-xs text-ink/50 w-6">{String(task.order_num).padStart(2, "0")}</span>
+        <span className="font-mono text-xs text-ink/50 w-6">{String(num).padStart(2, "0")}</span>
         <span
           className="h-12 w-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
           style={{ background: iconBg }}
