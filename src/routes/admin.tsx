@@ -11,7 +11,9 @@ import {
   adminRenameTeam,
   adminSetTaskHidden,
   adminListAll,
+  adminUpdateTeamColor,
 } from "@/lib/admin.functions";
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Table,
@@ -42,6 +44,8 @@ import {
 import { Trash2 } from "lucide-react";
 import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
 import { ShagLogo } from "@/components/brand";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { ExportPhotosTab } from "@/components/ExportPhotosTab";
 
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
@@ -49,7 +53,8 @@ export const Route = createFileRoute("/admin")({ component: AdminPage });
 const ADMIN_KEY = "seaholm.admin";
 const PASS_KEY = "seaholm.admin.pass";
 
-type TeamRow = { id: string; name: string; passcode: string | null; created_at: string };
+type TeamRow = { id: string; name: string; passcode: string | null; color: string | null; created_at: string };
+
 type TaskRow = {
   id: string;
   title: string;
