@@ -150,18 +150,21 @@ export type Database = {
       }
       teams: {
         Row: {
+          color: string | null
           created_at: string | null
           id: string
           name: string
           passcode: string | null
         }
         Insert: {
+          color?: string | null
           created_at?: string | null
           id?: string
           name: string
           passcode?: string | null
         }
         Update: {
+          color?: string | null
           created_at?: string | null
           id?: string
           name?: string

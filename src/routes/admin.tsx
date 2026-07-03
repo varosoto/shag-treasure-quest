@@ -11,7 +11,9 @@ import {
   adminRenameTeam,
   adminSetTaskHidden,
   adminListAll,
+  adminUpdateTeamColor,
 } from "@/lib/admin.functions";
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Table,
@@ -42,6 +44,8 @@ import {
 import { Trash2 } from "lucide-react";
 import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
 import { ShagLogo } from "@/components/brand";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { ExportPhotosTab } from "@/components/ExportPhotosTab";
 
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
@@ -49,7 +53,8 @@ export const Route = createFileRoute("/admin")({ component: AdminPage });
 const ADMIN_KEY = "seaholm.admin";
 const PASS_KEY = "seaholm.admin.pass";
 
-type TeamRow = { id: string; name: string; passcode: string | null; created_at: string };
+type TeamRow = { id: string; name: string; passcode: string | null; color: string | null; created_at: string };
+
 type TaskRow = {
   id: string;
   title: string;
@@ -189,6 +194,7 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
               <TabsTrigger value="submissions">Submissions</TabsTrigger>
               <TabsTrigger value="teams">Teams</TabsTrigger>
               <TabsTrigger value="tasks">Tasks</TabsTrigger>
+              <TabsTrigger value="export">Export Photos</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
             </TabsList>
             <TabsContent value="submissions">
@@ -214,10 +220,14 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
             <TabsContent value="tasks">
               <TasksTab passcode={passcode} tasks={tasks} onChange={refresh} />
             </TabsContent>
+            <TabsContent value="export">
+              <ExportPhotosTab teams={teams} tasks={tasks} subs={subs} />
+            </TabsContent>
             <TabsContent value="activity">
               <ActivityTab passcode={passcode} teamMap={teamMap} taskMap={taskMap} />
             </TabsContent>
           </Tabs>
+
         )}
       </main>
     </div>
@@ -433,10 +443,12 @@ function TeamsTab({
   const create = useServerFn(adminCreateTeam);
   const delTeam = useServerFn(adminDeleteTeam);
   const rename = useServerFn(adminRenameTeam);
+  const updateColor = useServerFn(adminUpdateTeamColor);
   const [resetTarget, setResetTarget] = useState<TeamRow | null>(null);
   const [confirmStage, setConfirmStage] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<TeamRow | null>(null);
   const [deleteStage, setDeleteStage] = useState(0);
+
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -481,6 +493,11 @@ function TeamsTab({
     await rename({ data: { passcode, teamId, name: newName } });
     onChange();
   }
+  async function doSetColor(teamId: string, color: string) {
+    await updateColor({ data: { passcode, teamId, color } });
+    onChange();
+  }
+
 
   return (
     <div className="space-y-4 mt-4">
@@ -510,9 +527,13 @@ function TeamsTab({
           return (
             <div key={t.id} className="bg-white border border-ink/10 rounded-2xl p-5">
               <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <EditableTeamName team={t} onRename={doRename} />
+                <div className="flex-1 min-w-0 flex items-center gap-3">
+                  <TeamColorSwatch color={t.color} onChange={(c) => doSetColor(t.id, c)} />
+                  <div className="min-w-0 flex-1">
+                    <EditableTeamName team={t} onRename={doRename} />
+                  </div>
                 </div>
+
                 <div className="text-right">
                   <div className="font-serif text-2xl text-teal">{s.points}</div>
                   <div className="font-mono text-[10px] uppercase text-ink/50">pts</div>
@@ -792,3 +813,60 @@ function EditableTeamName({
     </div>
   );
 }
+
+const TEAM_PALETTE = [
+  "#7a2e3e", "#d4a847", "#1a6b72", "#c1440e", "#4a6741",
+  "#8b4a6b", "#2f5f8f", "#c96f4a", "#4a8b8b", "#8b7355",
+];
+
+function TeamColorSwatch({
+  color,
+  onChange,
+}: {
+  color: string | null;
+  onChange: (c: string) => void | Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(color ?? "#7a2e3e");
+  useEffect(() => {
+    setValue(color ?? "#7a2e3e");
+  }, [color]);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label="Team color"
+          className="h-8 w-8 rounded-full border-2 border-ink/20 shadow-sm shrink-0 cursor-pointer"
+          style={{ background: color ?? "#7a2e3e" }}
+        />
+      </PopoverTrigger>
+      <PopoverContent className="w-56 space-y-3">
+        <div className="font-mono text-[10px] uppercase tracking-widest text-ink/50">Team color</div>
+        <div className="grid grid-cols-5 gap-2">
+          {TEAM_PALETTE.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => { setValue(c); onChange(c); }}
+              className={`h-7 w-7 rounded-full border-2 ${c === value ? "border-ink" : "border-ink/10"}`}
+              style={{ background: c }}
+              aria-label={c}
+            />
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onBlur={(e) => { if (e.target.value !== color) onChange(e.target.value); }}
+            className="h-8 w-12 rounded border border-ink/10 cursor-pointer bg-transparent"
+          />
+          <code className="font-mono text-xs text-ink/70">{value}</code>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
