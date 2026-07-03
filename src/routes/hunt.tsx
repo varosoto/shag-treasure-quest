@@ -141,7 +141,7 @@ function Hunt() {
         <div className="rounded-2xl bg-white border border-ink/10 p-4 text-sm text-ink/80 leading-relaxed">
 
           Welcome to Seaholm — Austin's old power plant district turned modern playground. Work
-          through all 10 stops and 4 hair dares. Submit a photo + a short story at each task.
+          through all {stops.length} stops and {challenges.length} hair dares. Submit a photo + a short story at each task.
         </div>
 
         {loading && <div className="text-center text-ink/50 py-8">Loading…</div>}
@@ -152,6 +152,7 @@ function Hunt() {
             task={task}
             team={team}
             submission={subs[task.id] ?? null}
+            displayNum={displayNumById.get(task.id) ?? task.order_num}
             onSaved={handleSaved}
           />
         ))}
@@ -170,6 +171,7 @@ function Hunt() {
             task={task}
             team={team}
             submission={subs[task.id] ?? null}
+            displayNum={displayNumById.get(task.id) ?? task.order_num}
             onSaved={handleSaved}
           />
         ))}
