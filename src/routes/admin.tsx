@@ -424,10 +424,11 @@ function FilterSelect({
 }
 
 function TeamsTab({
-  passcode, teams, subs, onChange,
+  passcode, teams, tasks, subs, onChange,
 }: {
-  passcode: string; teams: TeamRow[]; subs: SubRow[]; onChange: () => void;
+  passcode: string; teams: TeamRow[]; tasks: TaskRow[]; subs: SubRow[]; onChange: () => void;
 }) {
+  const totalTasks = tasks.filter((t) => !t.hidden).length;
   const reset = useServerFn(adminResetTeam);
   const create = useServerFn(adminCreateTeam);
   const delTeam = useServerFn(adminDeleteTeam);
