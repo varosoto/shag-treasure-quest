@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useRealtimeSubmissions } from "@/hooks/useRealtimeSubmissions";
 import { useRealtimeTeams } from "@/hooks/useRealtimeTeams";
 import { ShagLogo } from "@/components/brand";
@@ -14,6 +15,17 @@ function Leaderboard() {
   const { teams, connected: teamsConnected } = useRealtimeTeams();
   const { submissions, connected: subsConnected } = useRealtimeSubmissions();
   const connected = teamsConnected && subsConnected;
+  const [totalTasks, setTotalTasks] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      const { count } = await supabase
+        .from("tasks")
+        .select("id", { count: "exact", head: true })
+        .eq("hidden", false);
+      setTotalTasks(count ?? 0);
+    })();
+  }, []);
 
   const rows = useMemo<Row[]>(() => {
     const map = new Map<string, { points: number; done: number }>();
