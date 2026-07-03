@@ -635,6 +635,78 @@ function ActivityTab({
   );
 }
 
+function TasksTab({
+  passcode, tasks, onChange,
+}: {
+  passcode: string; tasks: TaskRow[]; onChange: () => void;
+}) {
+  const setHidden = useServerFn(adminSetTaskHidden);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function toggle(t: TaskRow, hidden: boolean) {
+    setBusyId(t.id);
+    try {
+      await setHidden({ data: { passcode, taskId: t.id, hidden } });
+      await onChange();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  const visibleCount = tasks.filter((t) => !t.hidden).length;
+
+  return (
+    <div className="space-y-4 mt-4">
+      <div className="font-mono text-xs text-ink/50">
+        {visibleCount} visible · {tasks.length - visibleCount} hidden · {tasks.length} total
+      </div>
+      <div className="bg-white border border-ink/10 rounded-xl overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>#</TableHead>
+              <TableHead>ID</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Points</TableHead>
+              <TableHead>Visible</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tasks.map((t) => (
+              <TableRow key={t.id} className={t.hidden ? "opacity-60" : ""}>
+                <TableCell className="font-mono text-xs">{t.order_num}</TableCell>
+                <TableCell className="font-mono text-xs text-ink/60">{t.id}</TableCell>
+                <TableCell className="font-medium">
+                  {t.title}
+                  {t.hidden && (
+                    <span className="ml-2 font-mono text-[10px] uppercase bg-rust/15 text-rust px-1.5 py-0.5 rounded">
+                      hidden
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="font-mono text-xs">{t.type}</TableCell>
+                <TableCell className="font-mono text-xs">
+                  {t.base_points}
+                  {t.max_bonus_points ? `+${t.max_bonus_points}` : ""}
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    checked={!t.hidden}
+                    disabled={busyId === t.id}
+                    onCheckedChange={(v) => toggle(t, !v)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+
 
 function timeAgo(iso: string) {
   const s = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
