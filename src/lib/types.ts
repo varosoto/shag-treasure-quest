@@ -12,6 +12,7 @@ export type Task = {
   base_points: number;
   bonus_description: string | null;
   max_bonus_points: number | null;
+  hidden?: boolean;
 };
 
 export type Submission = {

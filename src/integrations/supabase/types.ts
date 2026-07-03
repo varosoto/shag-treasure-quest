@@ -102,6 +102,7 @@ export type Database = {
           base_points: number
           bonus_description: string | null
           clue: string | null
+          hidden: boolean
           hint: string | null
           icon: string | null
           id: string
@@ -117,6 +118,7 @@ export type Database = {
           base_points: number
           bonus_description?: string | null
           clue?: string | null
+          hidden?: boolean
           hint?: string | null
           icon?: string | null
           id: string
@@ -132,6 +134,7 @@ export type Database = {
           base_points?: number
           bonus_description?: string | null
           clue?: string | null
+          hidden?: boolean
           hint?: string | null
           icon?: string | null
           id?: string

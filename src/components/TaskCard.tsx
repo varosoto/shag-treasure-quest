@@ -13,14 +13,16 @@ type Props = {
   task: Task;
   team: StoredTeam;
   submission: Submission | null;
+  displayNum?: number;
   onSaved: (s: Submission) => void;
 };
 
-export function TaskCard({ task, team, submission, onSaved }: Props) {
+export function TaskCard({ task, team, submission, displayNum, onSaved }: Props) {
   const isChallenge = task.type === "challenge";
   const submitted = !!submission;
   const [open, setOpen] = useState(!submitted);
   const [showHint, setShowHint] = useState(false);
+  const num = displayNum ?? task.order_num;
 
   const borderClr = submitted
     ? "border-teal"
@@ -28,11 +30,11 @@ export function TaskCard({ task, team, submission, onSaved }: Props) {
     ? "border-[#f5c6b0]"
     : "border-[#e0ebe9]";
   const bgClr = submitted ? "bg-[#f0f8f7]" : "bg-white";
-  const iconBg = isChallenge ? "#f5c6b0" : iconBgByStop[task.order_num] ?? "#e0ebe9";
+  const iconBg = isChallenge ? "#f5c6b0" : iconBgByStop[num] ?? "#e0ebe9";
 
   const displayTitle = submitted
-    ? `Challenge ${task.order_num} · ${task.title}`
-    : `Challenge ${task.order_num}`;
+    ? `Challenge ${num} · ${task.title}`
+    : `Challenge ${num}`;
   const showSubtitle = isChallenge && task.subtitle;
 
   return (
@@ -42,7 +44,7 @@ export function TaskCard({ task, team, submission, onSaved }: Props) {
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center gap-3 p-4 text-left"
       >
-        <span className="font-mono text-xs text-ink/50 w-6">{String(task.order_num).padStart(2, "0")}</span>
+        <span className="font-mono text-xs text-ink/50 w-6">{String(num).padStart(2, "0")}</span>
         <span
           className="h-12 w-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
           style={{ background: iconBg }}

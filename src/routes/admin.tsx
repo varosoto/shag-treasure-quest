@@ -9,6 +9,7 @@ import {
   adminDeleteTeam,
   adminCreateTeam,
   adminRenameTeam,
+  adminSetTaskHidden,
   adminListAll,
 } from "@/lib/admin.functions";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -56,6 +57,7 @@ type TaskRow = {
   order_num: number;
   base_points: number;
   max_bonus_points: number | null;
+  hidden: boolean;
 };
 type SubRow = {
   id: string;
@@ -186,6 +188,7 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
             <TabsList className="bg-mist">
               <TabsTrigger value="submissions">Submissions</TabsTrigger>
               <TabsTrigger value="teams">Teams</TabsTrigger>
+              <TabsTrigger value="tasks">Tasks</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
             </TabsList>
             <TabsContent value="submissions">
@@ -203,9 +206,13 @@ function Dashboard({ passcode, onLogout }: { passcode: string; onLogout: () => v
               <TeamsTab
                 passcode={passcode}
                 teams={teams}
+                tasks={tasks}
                 subs={subs}
                 onChange={refresh}
               />
+            </TabsContent>
+            <TabsContent value="tasks">
+              <TasksTab passcode={passcode} tasks={tasks} onChange={refresh} />
             </TabsContent>
             <TabsContent value="activity">
               <ActivityTab passcode={passcode} teamMap={teamMap} taskMap={taskMap} />
@@ -313,7 +320,7 @@ function SubmissionsTab({
         <FilterSelect label="Team" value={teamFilter} onChange={setTeamFilter}
           options={[{ v: "all", l: "All teams" }, ...teams.map((t) => ({ v: t.id, l: t.name }))]} />
         <FilterSelect label="Task" value={taskFilter} onChange={setTaskFilter}
-          options={[{ v: "all", l: "All tasks" }, ...tasks.map((t) => ({ v: t.id, l: t.title }))]} />
+          options={[{ v: "all", l: "All tasks" }, ...tasks.map((t) => ({ v: t.id, l: t.hidden ? `${t.title} (hidden)` : t.title }))]} />
         <FilterSelect label="Bonus" value={bonusFilter} onChange={setBonusFilter}
           options={[{ v: "all", l: "All" }, { v: "yes", l: "Yes" }, { v: "no", l: "No" }]} />
         <div className="ml-auto font-mono text-xs text-ink/50">{filtered.length} shown</div>
@@ -417,10 +424,11 @@ function FilterSelect({
 }
 
 function TeamsTab({
-  passcode, teams, subs, onChange,
+  passcode, teams, tasks, subs, onChange,
 }: {
-  passcode: string; teams: TeamRow[]; subs: SubRow[]; onChange: () => void;
+  passcode: string; teams: TeamRow[]; tasks: TaskRow[]; subs: SubRow[]; onChange: () => void;
 }) {
+  const totalTasks = tasks.filter((t) => !t.hidden).length;
   const reset = useServerFn(adminResetTeam);
   const create = useServerFn(adminCreateTeam);
   const delTeam = useServerFn(adminDeleteTeam);
@@ -511,7 +519,7 @@ function TeamsTab({
                 </div>
               </div>
               <div className="mt-3 font-mono text-xs text-ink/60">
-                {s.done} / 14 tasks
+                {s.done} / {totalTasks} tasks
               </div>
               <div className="mt-1 font-mono text-[10px] text-ink/40">
                 Last: {s.last ? new Date(s.last).toLocaleString() : "—"}
@@ -626,6 +634,78 @@ function ActivityTab({
     </div>
   );
 }
+
+function TasksTab({
+  passcode, tasks, onChange,
+}: {
+  passcode: string; tasks: TaskRow[]; onChange: () => void;
+}) {
+  const setHidden = useServerFn(adminSetTaskHidden);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function toggle(t: TaskRow, hidden: boolean) {
+    setBusyId(t.id);
+    try {
+      await setHidden({ data: { passcode, taskId: t.id, hidden } });
+      await onChange();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  const visibleCount = tasks.filter((t) => !t.hidden).length;
+
+  return (
+    <div className="space-y-4 mt-4">
+      <div className="font-mono text-xs text-ink/50">
+        {visibleCount} visible · {tasks.length - visibleCount} hidden · {tasks.length} total
+      </div>
+      <div className="bg-white border border-ink/10 rounded-xl overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>#</TableHead>
+              <TableHead>ID</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Points</TableHead>
+              <TableHead>Visible</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tasks.map((t) => (
+              <TableRow key={t.id} className={t.hidden ? "opacity-60" : ""}>
+                <TableCell className="font-mono text-xs">{t.order_num}</TableCell>
+                <TableCell className="font-mono text-xs text-ink/60">{t.id}</TableCell>
+                <TableCell className="font-medium">
+                  {t.title}
+                  {t.hidden && (
+                    <span className="ml-2 font-mono text-[10px] uppercase bg-rust/15 text-rust px-1.5 py-0.5 rounded">
+                      hidden
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="font-mono text-xs">{t.type}</TableCell>
+                <TableCell className="font-mono text-xs">
+                  {t.base_points}
+                  {t.max_bonus_points ? `+${t.max_bonus_points}` : ""}
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    checked={!t.hidden}
+                    disabled={busyId === t.id}
+                    onCheckedChange={(v) => toggle(t, !v)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
 
 
 function timeAgo(iso: string) {

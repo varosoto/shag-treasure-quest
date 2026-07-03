@@ -35,7 +35,7 @@ function Hunt() {
       return;
     }
     (async () => {
-      const { data: t } = await supabase.from("tasks").select("*").order("order_num");
+      const { data: t } = await supabase.from("tasks").select("*").eq("hidden", false).order("order_num");
       setTasks((t ?? []) as Task[]);
       setLoading(false);
     })();
@@ -43,8 +43,13 @@ function Hunt() {
 
   const stops = useMemo(() => tasks.filter((t) => t.type === "stop"), [tasks]);
   const challenges = useMemo(() => tasks.filter((t) => t.type === "challenge"), [tasks]);
+  const displayNumById = useMemo(() => {
+    const m = new Map<string, number>();
+    [...stops, ...challenges].forEach((t, i) => m.set(t.id, i + 1));
+    return m;
+  }, [stops, challenges]);
   const done = Object.keys(subs).length;
-  const total = tasks.length || 14;
+  const total = tasks.length;
   const points = Object.values(subs).reduce((sum, s) => sum + (s.awarded_points ?? 0), 0);
   const pct = (done / total) * 100;
 
@@ -93,7 +98,7 @@ function Hunt() {
           </span>
           <EventTitle size="md" />
           <p className="text-cream/70 text-[10px] mt-4 font-mono uppercase tracking-[0.2em]">
-            14 Challenges · Where Hair Matters · Austin, TX
+            {total} Challenges · Where Hair Matters · Austin, TX
           </p>
           <p className="text-cream/70 text-xs mt-2 font-mono uppercase tracking-wider">
             Team · {team.name}
@@ -136,7 +141,7 @@ function Hunt() {
         <div className="rounded-2xl bg-white border border-ink/10 p-4 text-sm text-ink/80 leading-relaxed">
 
           Welcome to Seaholm — Austin's old power plant district turned modern playground. Work
-          through all 10 stops and 4 hair dares. Submit a photo + a short story at each task.
+          through all {stops.length} stops and {challenges.length} hair dares. Submit a photo + a short story at each task.
         </div>
 
         {loading && <div className="text-center text-ink/50 py-8">Loading…</div>}
@@ -147,6 +152,7 @@ function Hunt() {
             task={task}
             team={team}
             submission={subs[task.id] ?? null}
+            displayNum={displayNumById.get(task.id) ?? task.order_num}
             onSaved={handleSaved}
           />
         ))}
@@ -165,6 +171,7 @@ function Hunt() {
             task={task}
             team={team}
             submission={subs[task.id] ?? null}
+            displayNum={displayNumById.get(task.id) ?? task.order_num}
             onSaved={handleSaved}
           />
         ))}
