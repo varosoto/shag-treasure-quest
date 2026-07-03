@@ -57,6 +57,7 @@ type TaskRow = {
   order_num: number;
   base_points: number;
   max_bonus_points: number | null;
+  hidden: boolean;
 };
 type SubRow = {
   id: string;
