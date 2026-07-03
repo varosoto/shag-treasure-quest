@@ -35,7 +35,7 @@ function Hunt() {
       return;
     }
     (async () => {
-      const { data: t } = await supabase.from("tasks").select("*").order("order_num");
+      const { data: t } = await supabase.from("tasks").select("*").eq("hidden", false).order("order_num");
       setTasks((t ?? []) as Task[]);
       setLoading(false);
     })();
@@ -43,8 +43,13 @@ function Hunt() {
 
   const stops = useMemo(() => tasks.filter((t) => t.type === "stop"), [tasks]);
   const challenges = useMemo(() => tasks.filter((t) => t.type === "challenge"), [tasks]);
+  const displayNumById = useMemo(() => {
+    const m = new Map<string, number>();
+    [...stops, ...challenges].forEach((t, i) => m.set(t.id, i + 1));
+    return m;
+  }, [stops, challenges]);
   const done = Object.keys(subs).length;
-  const total = tasks.length || 14;
+  const total = tasks.length;
   const points = Object.values(subs).reduce((sum, s) => sum + (s.awarded_points ?? 0), 0);
   const pct = (done / total) * 100;
 
