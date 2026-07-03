@@ -519,7 +519,7 @@ function TeamsTab({
                 </div>
               </div>
               <div className="mt-3 font-mono text-xs text-ink/60">
-                {s.done} / 14 tasks
+                {s.done} / {totalTasks} tasks
               </div>
               <div className="mt-1 font-mono text-[10px] text-ink/40">
                 Last: {s.last ? new Date(s.last).toLocaleString() : "—"}
